@@ -5,7 +5,7 @@ public class Basic {
     private Object result;
     private String code;
     String message;
-
+// hello comment
     public boolean isSuccess() {
         return success;
     }
