@@ -21,6 +21,7 @@ public class UnitHeadController {
     @PostMapping("/create")
     public ResponseEntity<?> createUnitHead(@RequestBody UnitHead unitHead) {
         UnitHead created = service.createUnitHead(unitHead);
+
         return factory.buildSuccess(
                 HttpStatus.CREATED,
                 created,
@@ -31,6 +32,7 @@ public class UnitHeadController {
     @GetMapping("/all")
     public ResponseEntity<?> getAllUnitHead() {
         List<UnitHead> allUnitHeads = service.getAllUnitHead();
+
         return factory.buildSuccess(
                 HttpStatus.OK,
                 allUnitHeads,
@@ -41,6 +43,7 @@ public class UnitHeadController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUnitHeadById(@PathVariable("id") Long id) {
         UnitHead unitHead = service.getUnitHeadById(id);
+
         return factory.buildSuccess(
                 HttpStatus.OK,
                 unitHead,
@@ -51,6 +54,7 @@ public class UnitHeadController {
     @PutMapping("/update/{unitName}")
     public ResponseEntity<?> updateUnitHeadByName(@PathVariable("unitName") String unitName, @RequestBody UnitHead unitHead) {
         UnitHead updated = service.updateUnitHeadByUnitName(unitName, unitHead);
+
         return factory.buildSuccess(
                 HttpStatus.OK,
                 updated,
@@ -61,6 +65,7 @@ public class UnitHeadController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteUnitHead(@PathVariable("id") Long id) {
         service.deleteUnitHead(id);
+
         return factory.buildSuccess(
                 HttpStatus.OK,
                 null,

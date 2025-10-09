@@ -12,20 +12,22 @@ public class UnitHead {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "unit_code")
+    @Column(name = "UNIT_CODE")
     private String unitCode;
 
-    @Column(name = "unit_name")
+    @Column(name = "UNIT_NAME")
     private String unitName;
 
-    @Column(name = "unit_full_name")
+    @Column(name = "UNIT_FULL_NAME")
     private String unitFullName;
 
+    @Column(name = "EMAIL")
     private String email;
 
-    @Column(name = "phone")
+    @Column(name = "PHONE")
     private String phoneNumber;
 
     public UnitHead(String unitCode, String unitName, String unitFullName, String email, String phoneNumber) {

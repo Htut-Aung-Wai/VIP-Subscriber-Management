@@ -27,12 +27,14 @@ public class UnitHeadServiceImpl implements UnitHeadService {
 
     @Override
     public UnitHead getUnitHeadById(Long id) {
-        return unitRepo.findById(id).orElseThrow(() -> new CommonException("ERR_404", "Unit Head with ID " + id + " not found."));
+        return unitRepo.findById(id)
+                .orElseThrow(() -> new CommonException("ERR_404", "Unit Head with ID " + id + " not found."));
     }
 
     @Override
     public UnitHead updateUnitHeadByUnitName(String existingUnitName, UnitHead updated) {
-        UnitHead existingUnitHead = unitRepo.findByUnitName(existingUnitName).orElseThrow(() -> new CommonException("ERR_404", "Unit Head with name " + existingUnitName + " not found."));
+        UnitHead existingUnitHead = unitRepo.findByUnitName(existingUnitName)
+                .orElseThrow(() -> new CommonException("ERR_404", "Unit Head with name " + existingUnitName + " not found."));
 
         if (updated.getUnitCode() != null && !updated.getUnitCode().isEmpty()) {
             existingUnitHead.setUnitCode(updated.getUnitCode());
@@ -49,6 +51,7 @@ public class UnitHeadServiceImpl implements UnitHeadService {
         if (updated.getPhoneNumber() != null && !updated.getPhoneNumber().isEmpty()) {
             existingUnitHead.setPhoneNumber(updated.getPhoneNumber());
         }
+
         return unitRepo.save(existingUnitHead);
     }
 
