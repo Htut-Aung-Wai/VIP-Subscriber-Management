@@ -2,9 +2,12 @@ package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entit
 
 import lombok.*;
 
+import javax.persistence.*;
+
 @Entity
 @Data
-@Table(name = "unit_head")
+@NoArgsConstructor
+@Table(name = "CAIO_VIP_UNIT_HEAD")
 public class UnitHead {
 
     @Id

@@ -12,7 +12,7 @@ public class CommonException extends RuntimeException {
     private String errorCode;
     private String message;
 
-    public CommonException(String requestId, String errorCode) {
+    public CommonException(Long requestId, String errorCode) {
         this.errorCode = errorCode;
         this.message = I18n.t(errorCode);
     }
@@ -20,6 +20,12 @@ public class CommonException extends RuntimeException {
     public CommonException(String errorCode) {
         this.errorCode = errorCode;
         this.message = I18n.t(errorCode);
+    }
+
+    public CommonException(String errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
+        this.message = message;
     }
 }
 
