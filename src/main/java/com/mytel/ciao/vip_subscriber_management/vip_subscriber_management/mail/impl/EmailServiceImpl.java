@@ -2,11 +2,13 @@ package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.mail.
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.mail.EmailService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
@@ -21,9 +23,9 @@ public class EmailServiceImpl implements EmailService {
             message.setText(text);
 
             message.setFrom("johndane0239@gmail.com");
-            System.out.println("Email sent to " + to + "---------------");
+            log.info("--- Email sent to --- {}", to);
         } catch (Exception e) {
-            System.out.println("Error sending email! " + e.getMessage());
+            log.info("--- Error sending email! --- {}", e.getMessage());
         }
     }
 }

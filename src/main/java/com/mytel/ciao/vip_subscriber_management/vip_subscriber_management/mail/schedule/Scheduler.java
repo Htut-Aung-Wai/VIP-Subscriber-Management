@@ -13,8 +13,6 @@ public class Scheduler {
 
     @Scheduled(fixedRate = 60000000)
     public void send() {
-        System.out.println(" --------------- Running Task --------------- ");
-
         service.sendEmail("---@gmail.com",
                 "Reminder about Renewal processes",
                 "Hello Mr John. This is an email to remind you to kindly check the renewal processes. ");
