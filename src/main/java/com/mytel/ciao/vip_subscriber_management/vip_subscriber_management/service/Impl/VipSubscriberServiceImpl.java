@@ -1,0 +1,572 @@
+package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.Impl;
+
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.Basic;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.ResponseFactory;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.utils.Translator;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.constant.ErrorCode;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.dto.VipSubscriberRequest;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.VipSubscriber;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.repository.VipSubscriberRepo;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.VipSubscriberService;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.*;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
+
+
+@Service
+@Slf4j
+public class VipSubscriberServiceImpl implements VipSubscriberService {
+
+    private final VipSubscriberRepo vipSubscriberRepo;
+    private final ResponseFactory responseFactory;
+
+    //@Value("${upload.temp.dir}")
+    private String tempDirPath="/home/htut-aung-wai/Documents/temp";
+
+    public VipSubscriberServiceImpl(VipSubscriberRepo vipSubscriberRepo, ResponseFactory responseFactory) {
+        this.vipSubscriberRepo = vipSubscriberRepo;
+        this.responseFactory = responseFactory;
+    }
+
+    @Override
+    public ResponseEntity<Basic> createVipSubscriber(VipSubscriberRequest vipSubscriberRequest)
+    {
+        try{
+
+            log.info("Creating Vip Subscriber ................");
+
+            VipSubscriber vipSubscriber=vipSubscriberRequestToVipSubscriber(vipSubscriberRequest);
+            vipSubscriber.setRegistrationDate(Timestamp.valueOf(LocalDateTime.now()));
+            VipSubscriber vipSubscriberSaved=vipSubscriberRepo.save(vipSubscriber);
+
+            log.info("[Succeed] Creating Vip Subscriber");
+            return responseFactory.buildSuccess(
+                    HttpStatus.OK,
+                    vipSubscriberSaved,
+                    ErrorCode.SUCCESS,
+                    "[Succeed] Creating Vip Subscriber"
+            );
+
+        }
+        catch (Exception e) {
+            log.error("[Failed] Error occurred while creating Vip Subscriber: {}", e.getMessage(), e);
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "[Failed] Error occurred while creating Vip Subscriber"
+            );
+        }
+
+
+    }
+
+
+    @Override
+    public ResponseEntity<Basic> updateVipSubscriber(String vipSubscriberId, VipSubscriberRequest vipSubscriberRequest) {
+        try {
+            log.info("Updating Vip Subscriber with id: {}", vipSubscriberId);
+
+            Optional<VipSubscriber> vipSubscriberOptional = vipSubscriberRepo.findByIdAndNotDeleted(vipSubscriberId);
+
+            if (!vipSubscriberOptional.isPresent()) {
+                log.warn("Vip Subscriber with id {} not found or deleted", vipSubscriberId);
+                return responseFactory.buildError(
+                        HttpStatus.NOT_FOUND,
+                        ErrorCode.NOT_FOUND,
+                        ErrorCode.FAIL,
+                        "Vip Subscriber with id "+vipSubscriberId+" not found or deleted"
+                );
+            }
+
+            VipSubscriber vipSubscriber = vipSubscriberOptional.get();
+
+            vipSubscriber.setBranchName(vipSubscriberRequest.getBranchName());
+            vipSubscriber.setVipPackageId(vipSubscriberRequest.getVipPackageId());
+            vipSubscriber.setProposalDocumentNo(vipSubscriberRequest.getProposalDocumentNo());
+
+            VipSubscriber vipSubscriberUpdated = vipSubscriberRepo.save(vipSubscriber);
+
+            log.info("[Succeed] Updated Vip Subscriber No: {}", vipSubscriber.getSubscriberNo());
+
+            return responseFactory.buildSuccess(
+                    HttpStatus.OK,
+                    vipSubscriberUpdated,
+                    ErrorCode.SUCCESS,
+                    "[Succeed] Updated Vip Subscriber"
+            );
+
+        } catch (Exception e) {
+            log.error("[Failed] Error occurred while updating Vip Subscriber: {}", e.getMessage(), e);
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "[Failed] Error occurred while updating Vip Subscriber"
+            );
+        }
+    }
+
+
+
+
+    @Override
+    public ResponseEntity<Basic> getVipSubscriber(String vipSubscriberId) {
+        try {
+            log.info("Fetching Vip Subscriber with id: {}", vipSubscriberId);
+
+            Optional<VipSubscriber> vipSubscriberOptional = vipSubscriberRepo.findByIdAndNotDeleted(vipSubscriberId);
+
+            if (!vipSubscriberOptional.isPresent()) {
+                log.warn("No active Vip Subscribers with this id found");
+                return responseFactory.buildError(
+                        HttpStatus.NOT_FOUND,
+                        ErrorCode.NOT_FOUND,
+                        ErrorCode.FAIL,
+                        "Active Vip Subscribers with id " +vipSubscriberId+ " not found"
+                );
+            }
+
+            VipSubscriber vipSubscriber = vipSubscriberOptional.get();
+
+            log.info("[Succeed] Fetched Vip Subscriber id: {}", vipSubscriberId);
+            return responseFactory.buildSuccess(
+                    HttpStatus.OK,
+                    vipSubscriber,
+                    ErrorCode.SUCCESS,
+                    "[Succeed] Fetched Vip Subscriber id"
+            );
+
+        } catch (Exception e) {
+            log.error("[Failed] Error occurred while fetching Vip Subscriber: {}", e.getMessage(), e);
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "[Failed] Error occurred while fetching Vip Subscriber"
+            );
+        }
+    }
+
+
+
+
+    @Override
+    public ResponseEntity<Basic> getAllVipSubscribers() {
+        try {
+            log.info("Fetching all active Vip Subscribers...");
+
+            List<VipSubscriber> vipSubscribers = vipSubscriberRepo.findAllActive();
+
+            if (vipSubscribers.isEmpty()) {
+                log.warn("No active Vip Subscribers found");
+                return responseFactory.buildError(
+                        HttpStatus.NOT_FOUND,
+                        ErrorCode.NOT_FOUND,
+                        ErrorCode.FAIL,
+                        "No active Vip Subscribers found"
+                );
+            }
+
+            log.info("[Succeed] Fetched {} active Vip Subscribers", vipSubscribers.size());
+            return responseFactory.buildSuccess(
+                    HttpStatus.OK,
+                    vipSubscribers,
+                    ErrorCode.SUCCESS,
+                    "[Succeed] Fetched {} active Vip Subscribers"
+            );
+
+        } catch (Exception e) {
+            log.error("[Failed] Error occurred while fetching all Vip Subscribers: {}", e.getMessage(), e);
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "[Failed] Error occurred while fetching all Vip Subscribers"
+            );
+        }
+    }
+
+
+
+    @Override
+    public ResponseEntity<Basic> deleteVipSubscriber(String vipSubscriberId) {
+        try {
+            log.info("Deleting (soft) Vip Subscriber with id: {}", vipSubscriberId);
+
+            Optional<VipSubscriber> vipSubscriberOptional = vipSubscriberRepo.findByIdAndNotDeleted(vipSubscriberId);
+
+            if (!vipSubscriberOptional.isPresent()) {
+                log.warn("Vip Subscriber with id {} not found or already deleted", vipSubscriberId);
+                return responseFactory.buildError(
+                        HttpStatus.NOT_FOUND,
+                        ErrorCode.NOT_FOUND,
+                        ErrorCode.FAIL,
+                        "Vip Subscriber with id "+vipSubscriberId+" not found or already deleted"
+                );
+            }
+
+            VipSubscriber vipSubscriber = vipSubscriberOptional.get();
+            vipSubscriber.setDeleted(true);
+            vipSubscriberRepo.save(vipSubscriber);
+
+            log.info("[Succeed] Soft deleted Vip Subscriber id: {}", vipSubscriberId);
+
+            return responseFactory.buildSuccess(
+                    HttpStatus.OK,
+                    ErrorCode.SUCCESS,
+                    ErrorCode.SUCCESS,
+                    "Successfully Deleted !"
+            );
+
+        } catch (Exception e) {
+            log.error("[Failed] Error occurred while soft deleting Vip Subscriber: {}", e.getMessage(), e);
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "[Failed] Error occurred while soft deleting Vip Subscriber"
+            );
+        }
+    }
+
+
+
+    private VipSubscriber vipSubscriberRequestToVipSubscriber(VipSubscriberRequest vipSubscriberRequest)
+    {
+        VipSubscriber vipSubscriber=new VipSubscriber();
+        vipSubscriber.setSubscriberNo(vipSubscriberRequest.getSubscriberNo());
+        vipSubscriber.setVipPackageId(vipSubscriberRequest.getVipPackageId());
+        vipSubscriber.setBranchName(vipSubscriberRequest.getBranchName());
+        vipSubscriber.setProposalDocumentNo(vipSubscriberRequest.getProposalDocumentNo());
+        vipSubscriber.setDeleted(false);
+        log.info("Saved Vip Subscriber No : {}",vipSubscriber.getSubscriberNo());
+
+
+        return vipSubscriber;
+    }
+
+
+
+
+    @Override
+    public ResponseEntity<Basic> importData(MultipartFile file) {
+        // Increase the maximum allowable byte array size for Apache POI
+        org.apache.poi.util.IOUtils.setByteArrayMaxOverride(200_000_000);
+
+        /*File tempDir = new File(tempDirPath);
+        if (!tempDir.exists()) {
+            tempDir.mkdirs(); // Create directory if it does not exist
+        }
+
+        // Create a unique filename and store it in the temporary folder
+        String tempFilePath = tempDirPath + "/" + UUID.randomUUID().toString() + ".xlsx";
+        File tempFile = new File(tempFilePath);*/
+
+        List<VipSubscriber> vipSubscribers = new ArrayList<>();
+
+        //try (InputStream inputStream = new FileInputStream(tempFile)) {
+        try (InputStream inputStream = file.getInputStream()) {
+            Workbook workbook = WorkbookFactory.create(inputStream);
+            Sheet sheet = workbook.getSheetAt(0);
+
+            // Check if the sheet is empty or invalid
+            if (sheet == null || sheet.getPhysicalNumberOfRows() <= 1) {
+                return responseFactory.buildError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        ErrorCode.INTERNAL_ERROR,
+                        ErrorCode.FAIL,
+                        "The uploaded file is empty or invalid."
+                );
+            }
+
+            Iterator<Row> rows = sheet.iterator();
+
+            // Validate header row
+            if (!rows.hasNext()) {
+                return responseFactory.buildError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        ErrorCode.INTERNAL_ERROR,
+                        ErrorCode.FAIL,
+                        "The uploaded file is empty or invalid."
+                );
+            }
+
+            Row headerRow = rows.next();
+            if (!isValidHeaderRow(headerRow)) {
+                return responseFactory.buildError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        ErrorCode.INTERNAL_ERROR,
+                        ErrorCode.FAIL,
+                        "The Excel file does not match the expected format."
+                );
+            }
+
+            // Process data rows
+            while (rows.hasNext()) {
+                Row row = rows.next();
+                if (row.getPhysicalNumberOfCells() != 4) {
+                    return responseFactory.buildError(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            ErrorCode.INTERNAL_ERROR,
+                            ErrorCode.FAIL,
+                            "Row format is invalid. Each row must have exactly 4 columns."
+                    );
+                }
+
+                try {
+                    VipSubscriber vipSubscriber = new VipSubscriber();
+                    vipSubscriber.setVipPackageId(getCellValueAsString(row.getCell(0)));
+                    vipSubscriber.setSubscriberNo(getCellValueAsString(row.getCell(1)));
+                    vipSubscriber.setBranchName(getCellValueAsString(row.getCell(2)));
+                    vipSubscriber.setProposalDocumentNo(getCellValueAsString(row.getCell(3)));
+                    vipSubscriber.setRegistrationDate(Timestamp.valueOf(LocalDateTime.now()));
+                    //vipSubscriber.setExpiryDate();
+                    vipSubscriber.setDeleted(false);
+
+                    vipSubscribers.add(vipSubscriber);
+
+
+                    // Process in batches (for example, every 500 records)
+                    if (vipSubscribers.size() >= 500) {
+                        saveBatch(vipSubscribers, vipSubscriberRepo, 500);  // Save batch
+                        vipSubscribers.clear();  // Clear the list after saving
+                    }
+                } catch (Exception e) {
+                    return responseFactory.buildError(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            ErrorCode.INTERNAL_ERROR,
+                            ErrorCode.FAIL,
+                            "Error processing row: " + e.getMessage()
+                    );
+                }
+            }
+
+            // Save any remaining records
+            if (!vipSubscribers.isEmpty()) {
+                saveBatch(vipSubscribers, vipSubscriberRepo, 500);
+            }
+
+            // Delete the temporary file after successful import
+            /*if (tempFile.exists()) {
+                boolean deleted = tempFile.delete();
+                if (!deleted) {
+                    log.warn("[Failed] Failed to delete the temp file: " + tempFilePath);
+                }
+            }*/
+
+            return responseFactory.buildSuccess(
+                    HttpStatus.OK,
+                    "Completed",
+                    ErrorCode.SUCCESS,
+                    "File imported successfully."
+            );
+
+        } catch (Exception e) {
+            log.error("[Failed] Error processing import file", e);
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "Error while processing the file: " + e.getMessage()
+            );
+        }
+    }
+
+    public <T> void saveBatch(List<T> saveList, JpaRepository repository, int batchSize) {
+        try {
+            int total = saveList.size();
+            int current = 0, next;
+            while (current < total) {
+                next = Math.min(current + batchSize, total);
+                long step1 = System.currentTimeMillis();
+                repository.saveAll(saveList.subList(current, next));
+                long step2 = System.currentTimeMillis();
+                log.info("[{}] ms to save batch in current = {}, total = {}", (step2 - step1), current, total);
+
+                current = next;
+            }
+        } catch (Exception ex) {
+            log.error("[saveBatch] error ", ex);
+            throw new RuntimeException();
+        }
+    }
+
+    private boolean isValidHeaderRow(Row headerRow) {
+        return headerRow.getPhysicalNumberOfCells() == 4 &&
+                headerRow.getCell(0).getStringCellValue().equalsIgnoreCase("VIP Package ID") &&
+                headerRow.getCell(1).getStringCellValue().equalsIgnoreCase("Subscriber No") &&
+                headerRow.getCell(2).getStringCellValue().equalsIgnoreCase("Branch Name") &&
+                headerRow.getCell(3).getStringCellValue().equalsIgnoreCase("Proposal Document No");
+    }
+
+
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) return "";
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                // Always store as integer, truncate decimals
+                long intValue = (long) cell.getNumericCellValue();
+                return String.valueOf(intValue);
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case BLANK:
+                return "";
+            default:
+                return cell.toString();
+        }
+    }
+
+
+
+
+
+    @Override
+    public ResponseEntity<byte[]> downloadTemplate() throws IOException {
+        // Create a new workbook and sheet
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("VIP Subscriber Template");
+
+        // Create header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("VIP Package ID");
+        headerRow.createCell(1).setCellValue("Subscriber No");
+        headerRow.createCell(2).setCellValue("Branch Name");
+        headerRow.createCell(3).setCellValue("Proposal Document No");
+
+        // Write the output to a ByteArrayOutputStream
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            workbook.write(byteArrayOutputStream);
+
+            // Set headers for file download
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=VIP_Subscriber_Template.xlsx");
+            headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            // Return the Excel file as a byte array
+            return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.OK);
+        }
+    }
+
+
+    @Override
+    public ResponseEntity<?> exportData() {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        try {
+            log.info("Fetching all active Vip Subscribers to export...");
+
+            List<VipSubscriber> vipSubscribers = vipSubscriberRepo.findAllActive();
+
+            /*if (vipSubscribers.isEmpty()) {
+                log.warn("No active Vip Subscribers found to export");
+                return responseFactory.buildError(
+                        HttpStatus.NOT_FOUND,
+                        ErrorCode.NOT_FOUND,
+                        ErrorCode.FAIL,
+                        "No active Vip Subscribers found"
+                );
+            }*/
+
+
+
+            log.info("[Succeed] Fetched {} active Vip Subscribers and exporting as excel file", vipSubscribers.size());
+            // Create a new workbook and sheet
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet("All VIP Subscriber");
+
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("VIP Package ID");
+            headerRow.createCell(1).setCellValue("Subscriber No");
+            headerRow.createCell(2).setCellValue("Branch Name");
+            headerRow.createCell(3).setCellValue("Proposal Document No");
+            headerRow.createCell(4).setCellValue("Registration Date");
+            headerRow.createCell(5).setCellValue("Expiry Date");
+
+
+            // Row
+            int rowNum = 1; // start after header
+            for (VipSubscriber subscriber : vipSubscribers) {
+                Row row = sheet.createRow(rowNum++);
+
+                // Make sure your VipSubscriber entity has these getter methods
+                row.createCell(0).setCellValue(
+                        subscriber.getVipPackageId() != null ? subscriber.getVipPackageId() : ""
+                );
+                row.createCell(1).setCellValue(
+                        subscriber.getSubscriberNo() != null ? subscriber.getSubscriberNo() : ""
+                );
+                row.createCell(2).setCellValue(
+                        subscriber.getBranchName() != null ? subscriber.getBranchName() : ""
+                );
+                row.createCell(3).setCellValue(
+                        subscriber.getProposalDocumentNo() != null ? subscriber.getProposalDocumentNo() : ""
+                );
+                row.createCell(4).setCellValue(
+                        subscriber.getRegistrationDate() != null
+                                ? dateFormat.format(subscriber.getRegistrationDate())
+                                : ""
+                );
+                row.createCell(5).setCellValue(
+                        subscriber.getExpiryDate() != null
+                                ? dateFormat.format(subscriber.getExpiryDate())
+                                : ""
+                );
+            }
+
+            //Auto resize
+            for (int i = 0; i < 6; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+
+            // Write the output to a ByteArrayOutputStream
+            try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                workbook.write(byteArrayOutputStream);
+
+                // Set headers for file download
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Disposition", "attachment; filename=All_VIP_Subscriber.xlsx");
+                headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+                // Return the Excel file as a byte array
+                return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.OK);
+
+            }
+
+        } catch (Exception e) {
+            log.error("[Failed] Error occurred while fetching or exporting all Vip Subscribers: {}", e.getMessage(), e);
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "[Failed] Error occurred while fetching or exporting all Vip Subscribers"
+            );
+        }
+
+
+
+
+    }
+
+
+}
