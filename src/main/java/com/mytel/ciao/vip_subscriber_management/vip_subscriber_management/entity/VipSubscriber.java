@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @Setter
 @Entity
 @Table(name = "CAIO_VIP_VIP_SUBSCRIBER")
-public class VipSubscriber {
+public class VipSubscriber extends BaseEntity{
 
     @Id
     @GeneratedValue(generator = "uuid2")
