@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface UnitHeadLogRepo extends JpaRepository<UnitHeadLog, Long> {
 
-    List<UnitHeadLog> findByUnitNameOrderByCreatedAtDesc(String unitName);
+    List<UnitHeadLog> findByUnitName(String unitName);
 
-    List<UnitHeadLog> findByUnitNameAndActionTypeOrderByCreatedAtDesc(String unitName, UnitHeadLog.ActionType actionType);
+    List<UnitHeadLog> findByUnitNameAndActionType(String unitName, UnitHeadLog.ActionType actionType);
 
 }

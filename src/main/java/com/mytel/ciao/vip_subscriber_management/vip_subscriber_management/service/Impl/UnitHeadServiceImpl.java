@@ -22,6 +22,9 @@ public class UnitHeadServiceImpl implements UnitHeadService {
 
     @Override
     public UnitHead createUnitHead(UnitHead unitHead) {
+        if (unitRepo.existsByUnitCode(unitHead.getUnitCode())) {
+            throw new CommonException("Unit Code " + unitHead.getUnitCode() + " Already Exist! Please Change.");
+        }
         LocalDateTime now = LocalDateTime.now();
         unitHead.setCreatedAt(now);
         unitHead.setLastUpdatedAt(now);
@@ -42,19 +45,27 @@ public class UnitHeadServiceImpl implements UnitHeadService {
     }
 
     @Override
-    public UnitHead getUnitHeadByUnitFullName(String unitFullName) {
-        return unitRepo.findByUnitFullName(unitFullName)
-                .orElseThrow(() -> new CommonException("Unit Head not found for : " + unitFullName));
+    public List<UnitHead> getUnitHeadByUnitFullName(String unitFullName) {
+        List<UnitHead> results = unitRepo.findByUnitFullName(unitFullName);
+        if (results.isEmpty()) {
+            throw new CommonException("Unit Head not found for: " + unitFullName);
+        }
+        return results;
 
     }
 
     @Override
-    public UnitHead updateUnitHeadByUnitName(String existingUnitName, UnitHead updated) {
-        UnitHead existingUnitHead = unitRepo.findByUnitName(existingUnitName)
-                .orElseThrow(() -> new CommonException("ERR_404", "Unit Head with name " + existingUnitName + " not found."));
+    public UnitHead updateUnitHeadByUnitCode(String unitCode, UnitHead updated) {
+        UnitHead existingUnitHead = unitRepo.findByUnitCode(unitCode)
+                .orElseThrow(() -> new CommonException("ERR_404", "Unit Head with name " + unitCode + " not found."));
 
         UnitHead oldUnit = new UnitHead();
         BeanUtils.copyProperties(existingUnitHead, oldUnit);
+
+//        if (updated.getUnitCode() != null && unitRepo.existsByUnitCode(updated.getUnitCode()) && !updated.getUnitCode().equals(existingUnitHead.getUnitCode())) {
+//            throw new CommonException("Unit Code " + updated.getUnitCode() + " Already Exist! Please Change.");
+//        }
+        updated.setUnitCode(existingUnitHead.getUnitCode());
 
         if (isValid(updated.getUnitName())) {
             existingUnitHead.setUnitName(updated.getUnitName());
@@ -75,9 +86,8 @@ public class UnitHeadServiceImpl implements UnitHeadService {
         } else {
             saved.setLastUpdatedAt(LocalDateTime.now());
         }
-        unitRepo.save(saved);
 
-        return saved;
+        return unitRepo.save(saved);
     }
 
     @Override

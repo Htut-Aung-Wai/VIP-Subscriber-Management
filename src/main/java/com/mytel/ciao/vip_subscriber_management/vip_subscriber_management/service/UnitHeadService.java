@@ -12,9 +12,9 @@ public interface UnitHeadService {
 
     UnitHead getUnitHeadById(Long id);
 
-    UnitHead getUnitHeadByUnitFullName(String unitFullName);
+    List<UnitHead> getUnitHeadByUnitFullName(String unitFullName);
 
-    UnitHead updateUnitHeadByUnitName(String existingUnitName, UnitHead updated);
+    UnitHead updateUnitHeadByUnitCode(String unitCode, UnitHead updated);
 
     void deleteUnitHead(Long id);
 

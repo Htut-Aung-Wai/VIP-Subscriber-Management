@@ -53,7 +53,8 @@ public class UnitHeadController {
 
     @GetMapping("/unit-full-name/{unitFullName}")
     public ResponseEntity<?> getUnitHeadByUnitFullName(@PathVariable("unitFullName") String unitFullName) {
-        UnitHead unitHead = service.getUnitHeadByUnitFullName(unitFullName);
+        List<UnitHead> unitHead = service.getUnitHeadByUnitFullName(unitFullName);
+
         return factory.buildSuccess(
                 HttpStatus.OK,
                 unitHead,
@@ -61,15 +62,15 @@ public class UnitHeadController {
                 unitFullName + " Unit Head Retrieved.");
     }
 
-    @PutMapping("/update/{unitName}")
-    public ResponseEntity<?> updateUnitHeadByName(@PathVariable("unitName") String unitName, @RequestBody UnitHead unitHead) {
-        UnitHead updated = service.updateUnitHeadByUnitName(unitName, unitHead);
+    @PutMapping("/update/{unitCode}")
+    public ResponseEntity<?> updateUnitHeadByUnitCode(@PathVariable("unitCode") String unitCode, @RequestBody UnitHead unitHead) {
+        UnitHead updated = service.updateUnitHeadByUnitCode(unitCode, unitHead);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 updated,
                 "200",
-                "Unit Head Updated.");
+                unitCode + " Unit Head Updated. Unit Code Is Read-Only!");
     }
 
     @DeleteMapping("/delete/{id}")

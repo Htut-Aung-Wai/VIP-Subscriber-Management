@@ -5,7 +5,6 @@ import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.repository.UnitHeadLogRepo;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitHeadLogService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -107,17 +106,17 @@ public class UnitHeadLogServiceImpl implements UnitHeadLogService {
 
     @Override
     public List<UnitHeadLog> getAllLogs() {
-        return repo.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        return repo.findAll();
     }
 
     @Override
     public List<UnitHeadLog> getLogsByUnitName(String unitName) {
-        return repo.findByUnitNameOrderByCreatedAtDesc(unitName);
+        return repo.findByUnitName(unitName);
     }
 
     @Override
     public List<UnitHeadLog> getLogsByUnitNameAndAction(String unitName, UnitHeadLog.ActionType actionType) {
-        return repo.findByUnitNameAndActionTypeOrderByCreatedAtDesc(unitName, actionType);
+        return repo.findByUnitNameAndActionType(unitName, actionType);
     }
 
 }

@@ -17,7 +17,7 @@ public class UnitHead {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "UNIT_CODE", updatable = false)
+    @Column(name = "UNIT_CODE", updatable = false, unique = true)
     private String unitCode;
 
     @Column(name = "UNIT_NAME")
