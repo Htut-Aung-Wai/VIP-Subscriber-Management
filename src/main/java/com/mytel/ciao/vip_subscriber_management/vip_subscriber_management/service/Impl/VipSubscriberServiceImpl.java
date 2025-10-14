@@ -1,12 +1,16 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.Basic;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.ResponseFactory;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.utils.Translator;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.constant.ErrorCode;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.constant.VipSubscriberLogActionType;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.dto.VipSubscriberRequest;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.VipSubscriber;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.VipSubscriberLog;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.repository.VipSubscriberRepo;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.VipSubscriberLogService;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.VipSubscriberService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,13 +38,12 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
     private final VipSubscriberRepo vipSubscriberRepo;
     private final ResponseFactory responseFactory;
+    private final VipSubscriberLogService vipSubscriberLogService;
 
-    //@Value("${upload.temp.dir}")
-    private String tempDirPath="/home/htut-aung-wai/Documents/temp";
-
-    public VipSubscriberServiceImpl(VipSubscriberRepo vipSubscriberRepo, ResponseFactory responseFactory) {
+    public VipSubscriberServiceImpl(VipSubscriberRepo vipSubscriberRepo, ResponseFactory responseFactory, VipSubscriberLogService vipSubscriberLogService) {
         this.vipSubscriberRepo = vipSubscriberRepo;
         this.responseFactory = responseFactory;
+        this.vipSubscriberLogService = vipSubscriberLogService;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
             VipSubscriber vipSubscriberSaved=vipSubscriberRepo.save(vipSubscriber);
 
             log.info("[Succeed] Creating Vip Subscriber");
+            vipSubscriberLogService.createLog(vipSubscriberSaved);
             return responseFactory.buildSuccess(
                     HttpStatus.OK,
                     vipSubscriberSaved,
@@ -65,6 +69,9 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
         }
         catch (Exception e) {
             log.error("[Failed] Error occurred while creating Vip Subscriber: {}", e.getMessage(), e);
+            vipSubscriberLogService.errorlog(null,vipSubscriberRequest.getSubscriberNo(),
+                    VipSubscriberLogActionType.CREATE.name(),
+                    e.getMessage());
             return responseFactory.buildError(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     ErrorCode.INTERNAL_ERROR,
@@ -103,6 +110,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
             VipSubscriber vipSubscriberUpdated = vipSubscriberRepo.save(vipSubscriber);
 
             log.info("[Succeed] Updated Vip Subscriber No: {}", vipSubscriber.getSubscriberNo());
+            vipSubscriberLogService.updateLog(vipSubscriberUpdated);
 
             return responseFactory.buildSuccess(
                     HttpStatus.OK,
@@ -113,6 +121,9 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
         } catch (Exception e) {
             log.error("[Failed] Error occurred while updating Vip Subscriber: {}", e.getMessage(), e);
+            vipSubscriberLogService.errorlog(vipSubscriberId,vipSubscriberRequest.getSubscriberNo(),
+                    VipSubscriberLogActionType.UPDATE.name(),
+                    e.getMessage());
             return responseFactory.buildError(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     ErrorCode.INTERNAL_ERROR,
@@ -226,6 +237,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
             vipSubscriberRepo.save(vipSubscriber);
 
             log.info("[Succeed] Soft deleted Vip Subscriber id: {}", vipSubscriberId);
+            vipSubscriberLogService.deleteLog(vipSubscriberId);
 
             return responseFactory.buildSuccess(
                     HttpStatus.OK,
@@ -236,6 +248,9 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
         } catch (Exception e) {
             log.error("[Failed] Error occurred while soft deleting Vip Subscriber: {}", e.getMessage(), e);
+            vipSubscriberLogService.errorlog(vipSubscriberId,null,
+                    VipSubscriberLogActionType.DELETE.name(),
+                    e.getMessage());
             return responseFactory.buildError(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     ErrorCode.INTERNAL_ERROR,
@@ -344,7 +359,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
                     // Process in batches (for example, every 500 records)
                     if (vipSubscribers.size() >= 500) {
-                        saveBatch(vipSubscribers, vipSubscriberRepo, 500);  // Save batch
+                        saveBatchVipSubscriber(vipSubscribers,500);  // Save batch
                         vipSubscribers.clear();  // Clear the list after saving
                     }
                 } catch (Exception e) {
@@ -359,7 +374,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
             // Save any remaining records
             if (!vipSubscribers.isEmpty()) {
-                saveBatch(vipSubscribers, vipSubscriberRepo, 500);
+                saveBatchVipSubscriber(vipSubscribers, 500);
             }
 
             // Delete the temporary file after successful import
@@ -388,21 +403,31 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
         }
     }
 
-    public <T> void saveBatch(List<T> saveList, JpaRepository repository, int batchSize) {
+    public void saveBatchVipSubscriber(List<VipSubscriber> saveList, int batchSize) {
         try {
             int total = saveList.size();
             int current = 0, next;
             while (current < total) {
                 next = Math.min(current + batchSize, total);
                 long step1 = System.currentTimeMillis();
-                repository.saveAll(saveList.subList(current, next));
+                List<VipSubscriber> batch = vipSubscriberRepo.saveAll(saveList.subList(current, next));
                 long step2 = System.currentTimeMillis();
                 log.info("[{}] ms to save batch in current = {}, total = {}", (step2 - step1), current, total);
+
+                // Create logs for each saved entity
+                for (VipSubscriber vipSubscriber : batch) {
+                    try {
+                        vipSubscriberLogService.createLog(vipSubscriber); // call your existing createLog method
+                    } catch (JsonProcessingException e) {
+                        log.error("Failed to create log for subscriberNo={} : {}", vipSubscriber.getSubscriberNo(), e.getMessage(), e);
+                    }
+                }
 
                 current = next;
             }
         } catch (Exception ex) {
             log.error("[saveBatch] error ", ex);
+            vipSubscriberLogService.errorlog(null,null,VipSubscriberLogActionType.CREATE.name(),ex.getMessage());
             throw new RuntimeException();
         }
     }
