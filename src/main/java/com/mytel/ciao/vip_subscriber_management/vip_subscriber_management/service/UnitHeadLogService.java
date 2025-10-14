@@ -1,7 +1,7 @@
-package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.service;
+package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service;
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitHead;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.entity.UnitHeadLog;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitHeadLog;
 
 import java.util.List;
 

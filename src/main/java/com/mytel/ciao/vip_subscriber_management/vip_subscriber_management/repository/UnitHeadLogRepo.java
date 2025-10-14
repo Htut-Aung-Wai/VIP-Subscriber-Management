@@ -1,6 +1,6 @@
-package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.repo;
+package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.repository;
 
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.entity.UnitHeadLog;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitHeadLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

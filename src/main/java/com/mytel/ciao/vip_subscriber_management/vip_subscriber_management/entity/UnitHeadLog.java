@@ -1,4 +1,4 @@
-package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.entity;
+package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -34,13 +34,13 @@ public class UnitHeadLog {
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "action_type")
+    @Column(name = "ACTION_TYPE")
     private ActionType actionType;
 
-    @Column(columnDefinition = "TEXT", name = "ORIGINAL_FIELDS")
+    @Column(name = "ORIGINAL_FIELDS", length = 1000)
     private String originalFields;
 
-    @Column(columnDefinition = "TEXT", name = "CHANGED_FIELDS")
+    @Column(name = "CHANGED_FIELDS", length = 1000)
     private String changedFields;
 
     @Column(name = "CREATED_AT", updatable = false)

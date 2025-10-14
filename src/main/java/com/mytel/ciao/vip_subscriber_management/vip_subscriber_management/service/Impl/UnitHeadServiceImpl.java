@@ -2,8 +2,8 @@ package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.servi
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitHead;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.exception.CommonException;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.entity.UnitHeadLog;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.service.UnitHeadLogService;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitHeadLog;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitHeadLogService;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.repository.UnitHeadRepo;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitHeadService;
 import lombok.RequiredArgsConstructor;

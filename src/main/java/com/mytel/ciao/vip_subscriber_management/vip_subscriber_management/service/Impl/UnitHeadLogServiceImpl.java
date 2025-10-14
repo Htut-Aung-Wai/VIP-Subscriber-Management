@@ -1,9 +1,9 @@
-package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.service.impl;
+package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.Impl;
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitHead;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.entity.UnitHeadLog;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.repo.UnitHeadLogRepo;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.logging.service.UnitHeadLogService;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitHeadLog;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.repository.UnitHeadLogRepo;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitHeadLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
