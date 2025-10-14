@@ -12,6 +12,8 @@ public interface UnitHeadService {
 
     UnitHead getUnitHeadById(Long id);
 
+    UnitHead getUnitHeadByUnitFullName(String unitFullName);
+
     UnitHead updateUnitHeadByUnitName(String existingUnitName, UnitHead updated);
 
     void deleteUnitHead(Long id);

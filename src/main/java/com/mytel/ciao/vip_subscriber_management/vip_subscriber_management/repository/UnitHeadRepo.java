@@ -8,4 +8,7 @@ import java.util.Optional;
 public interface UnitHeadRepo extends JpaRepository<UnitHead, Long> {
 
     Optional<UnitHead> findByUnitName(String unitName);
+
+    Optional<UnitHead> findByUnitFullName(String unitFullName);
+
 }

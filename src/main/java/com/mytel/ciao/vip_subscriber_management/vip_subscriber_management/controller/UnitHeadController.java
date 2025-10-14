@@ -51,6 +51,16 @@ public class UnitHeadController {
                 "Id " + id + "Unit Head Retrieved.");
     }
 
+    @GetMapping("/unit-full-name/{unitFullName}")
+    public ResponseEntity<?> getUnitHeadByUnitFullName(@PathVariable("unitFullName") String unitFullName) {
+        UnitHead unitHead = service.getUnitHeadByUnitFullName(unitFullName);
+        return factory.buildSuccess(
+                HttpStatus.OK,
+                unitHead,
+                "200",
+                unitFullName + " Unit Head Retrieved.");
+    }
+
     @PutMapping("/update/{unitName}")
     public ResponseEntity<?> updateUnitHeadByName(@PathVariable("unitName") String unitName, @RequestBody UnitHead unitHead) {
         UnitHead updated = service.updateUnitHeadByUnitName(unitName, unitHead);
