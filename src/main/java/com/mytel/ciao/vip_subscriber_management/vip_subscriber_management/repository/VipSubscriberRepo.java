@@ -23,9 +23,9 @@ public interface VipSubscriberRepo extends JpaRepository<VipSubscriber, String> 
     /**
      * For Expiring Subscribers In Month N+2
      */
-    @Query("SELECT s FROM VipSubscriber s WHERE s.expiryDate BETWEEN :start AND :end AND s.branch = :branch")
+    @Query("SELECT s FROM VipSubscriber s WHERE s.expiryDate BETWEEN :start AND :end AND s.branchName = :branchName")
     List<VipSubscriber> findExpiringSubscribersByBranchName(@Param("start") LocalDateTime start,
                                                             @Param("end") LocalDateTime end,
-                                                            @Param("branch") String branch);
+                                                            @Param("branchName") String branchName);
 
 }

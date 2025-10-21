@@ -18,7 +18,7 @@ public class ExpiringVipSubscriberServiceImpl implements ExpiringVipSubscriberSe
     private final VipSubscriberRepo repo;
 
     @Override
-    public List<VipSubscriber> getExpiringSubscriberFilteredByBranchName(String branch) {
+    public List<VipSubscriber> getExpiringSubscriberFilteredByBranchName(String branchName) {
         LocalDate now = LocalDate.now().withDayOfMonth(1);
         LocalDate futureStart = now.plusMonths(2).withDayOfMonth(1);
         LocalDate futureEnd = futureStart.withDayOfMonth(futureStart.lengthOfMonth());
@@ -26,7 +26,7 @@ public class ExpiringVipSubscriberServiceImpl implements ExpiringVipSubscriberSe
         LocalDateTime start = futureStart.atStartOfDay();
         LocalDateTime end = futureEnd.atTime(LocalTime.MAX);
 
-        return repo.findExpiringSubscribersByBranchName(start, end, branch);
+        return repo.findExpiringSubscribersByBranchName(start, end, branchName);
 
     }
 }

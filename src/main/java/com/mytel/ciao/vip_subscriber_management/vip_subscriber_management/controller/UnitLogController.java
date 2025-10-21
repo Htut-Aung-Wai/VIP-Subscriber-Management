@@ -46,7 +46,7 @@ public class UnitLogController {
     @GetMapping("/{unitName}/{actionType}")
     public ResponseEntity<?> getLogsByUnitNameAndAction(
             @PathVariable String unitName,
-            @PathVariable UnitLog.ActionType actionType) {
+            @PathVariable String actionType) {
         List<UnitLog> logs = service.getLogsByUnitNameAndAction(unitName, actionType);
 
         return factory.buildSuccess(
