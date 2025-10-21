@@ -1,15 +1,13 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.controller;
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.ResponseFactory;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.VipPackages;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.VipPackagesService;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.VipPackage;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.VipPackageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.DocFlavor;
-import javax.security.auth.kerberos.KerberosTicket;
 import java.util.List;
 
 @RestController
@@ -17,12 +15,12 @@ import java.util.List;
 @RequestMapping("/api/packages")
 public class VipPackagesController {
 
-    private final VipPackagesService service;
+    private final VipPackageService service;
     private final ResponseFactory factory;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createPackages(@RequestBody VipPackages packages) {
-        VipPackages created = service.createPackages(packages);
+    public ResponseEntity<?> createPackages(@RequestBody VipPackage packages) {
+        VipPackage created = service.createPackages(packages);
 
         return factory.buildSuccess(
                 HttpStatus.CREATED,
@@ -33,18 +31,18 @@ public class VipPackagesController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllPackages() {
-        List<VipPackages> packages = service.getAllPackages();
+        List<VipPackage> packages = service.getAllPackages();
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 packages,
                 "200",
-                "All VIP Package Retrieved.");
+                "All VIP Packages Retrieved.");
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updatePackages(@PathVariable("id") Long id, @RequestBody VipPackages packages) {
-        VipPackages updated = service.updatePackages(id, packages);
+    public ResponseEntity<?> updatePackages(@PathVariable("id") Long id, @RequestBody VipPackage packages) {
+        VipPackage updated = service.updatePackages(id, packages);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
@@ -54,7 +52,7 @@ public class VipPackagesController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public  ResponseEntity<?> deletePackage(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deletePackage(@PathVariable("id") Long id) {
         service.deletePackages(id);
 
         return factory.buildSuccess(

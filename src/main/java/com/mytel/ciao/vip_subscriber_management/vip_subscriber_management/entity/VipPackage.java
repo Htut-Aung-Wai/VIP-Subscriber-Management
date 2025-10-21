@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "CAIO_VIP_PACKAGES")
-public class VipPackages {
+@Table(name = "CAIO_VIP_PACKAGE")
+public class VipPackage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,5 +33,8 @@ public class VipPackages {
 
     @Column(name = "MONTH")
     private Integer month;
+
+    @Column(name = "IS_ACTIVE")
+    private boolean active = true;
 
 }
