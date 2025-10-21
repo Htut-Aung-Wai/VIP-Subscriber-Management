@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface VipSubscriberRepo extends JpaRepository<VipSubscriber, String> {
+public interface VipSubscriberRepo extends JpaRepository<VipSubscriber,String> {
 
 
     @Query("SELECT v FROM VipSubscriber v WHERE v.id = :id AND v.isDeleted = false")
@@ -27,5 +27,11 @@ public interface VipSubscriberRepo extends JpaRepository<VipSubscriber, String> 
     List<VipSubscriber> findExpiringSubscribersByBranchName(@Param("start") LocalDateTime start,
                                                             @Param("end") LocalDateTime end,
                                                             @Param("branchName") String branchName);
+    @Query("SELECT v.subscriberNo FROM VipSubscriber v WHERE v.isDeleted = false")
+    List<String> findAllSubscriberNumbers();
+
+
+
+
 
 }
