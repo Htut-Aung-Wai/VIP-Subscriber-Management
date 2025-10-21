@@ -37,9 +37,8 @@ public class UnitLog {
     @Column(name = "REMARK", length = 1000)
     private String remark;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "ACTION")
-    private ActionType action;
+    private String action;
 
     @Column(length = 1000, name = "ORIGINAL_FIELDS")
     private String originalFields;
@@ -66,10 +65,6 @@ public class UnitLog {
     @PreUpdate
     public void onUpdate() {
         lastUpdatedAt = Timestamp.valueOf(LocalDateTime.now());
-    }
-
-    public enum ActionType {
-        CREATED, UPDATED, DELETED
     }
 
 }

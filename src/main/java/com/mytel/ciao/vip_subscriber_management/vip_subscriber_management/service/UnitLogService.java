@@ -17,5 +17,5 @@ public interface UnitLogService {
 
     List<UnitLog> getLogsByUnitName(String unitName);
 
-    List<UnitLog> getLogsByUnitNameAndAction(String unitName, UnitLog.ActionType actionType);
+    List<UnitLog> getLogsByUnitNameAndAction(String unitName, String actionType);
 }

@@ -9,6 +9,6 @@ public interface UnitLogRepo extends JpaRepository<UnitLog, Long> {
 
     List<UnitLog> findByUnitName(String unitName);
 
-    List<UnitLog> findByUnitNameAndActionType(String unitName, UnitLog.ActionType actionType);
+    List<UnitLog> findByUnitNameAndAction(String unitName, String actionType);
 
 }

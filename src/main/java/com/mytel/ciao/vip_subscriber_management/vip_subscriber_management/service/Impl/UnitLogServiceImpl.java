@@ -20,7 +20,7 @@ public class UnitLogServiceImpl implements UnitLogService {
     @Override
     public void logCreated(Unit unit) {
         UnitLog log = new UnitLog();
-        log.setAction(UnitLog.ActionType.CREATED);
+        log.setAction("CREATED");
         log.setUnitCode(unit.getUnitCode());
         log.setUnitName(unit.getUnitName());
         log.setUnitFullName(unit.getUnitFullName());
@@ -50,7 +50,7 @@ public class UnitLogServiceImpl implements UnitLogService {
     @Override
     public UnitLog logUpdated(Unit oldUnit, Unit newUnit) {
         UnitLog log = new UnitLog();
-        log.setAction(UnitLog.ActionType.UPDATED);
+        log.setAction("UPDATED");
         log.setUnitCode(oldUnit.getUnitCode());
         log.setUnitName(newUnit.getUnitName());
         log.setUnitFullName(newUnit.getUnitFullName());
@@ -104,7 +104,7 @@ public class UnitLogServiceImpl implements UnitLogService {
     @Override
     public void logDeleted(Unit deletedUnit) {
         UnitLog log = new UnitLog();
-        log.setAction(UnitLog.ActionType.DELETED);
+        log.setAction("DELETED");
         log.setUnitCode(deletedUnit.getUnitCode());
         log.setUnitName(deletedUnit.getUnitName());
         log.setUnitFullName(deletedUnit.getUnitFullName());
@@ -128,8 +128,8 @@ public class UnitLogServiceImpl implements UnitLogService {
     }
 
     @Override
-    public List<UnitLog> getLogsByUnitNameAndAction(String unitName, UnitLog.ActionType actionType) {
-        return repo.findByUnitNameAndActionType(unitName, actionType);
+    public List<UnitLog> getLogsByUnitNameAndAction(String unitName, String actionType) {
+        return repo.findByUnitNameAndAction(unitName, actionType);
     }
 
 }
