@@ -19,7 +19,7 @@ public interface VipSubscriberService {
 
     ResponseEntity<Basic> deleteVipSubscriber(String vipSubscriberId);
 
-    ResponseEntity<Basic> importData(MultipartFile file);
+    ResponseEntity<?> importData(MultipartFile file);
 
     ResponseEntity<byte[]> downloadTemplate() throws IOException;
 

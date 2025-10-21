@@ -1,11 +1,13 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.dto;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 
 @Data
+@AllArgsConstructor
 public class VipSubscriberRequest {
 
 
@@ -19,6 +21,7 @@ public class VipSubscriberRequest {
 
     @NotBlank(message = "Proposal Document No is required")
     private String proposalDocumentNo;
+
 
 
 }

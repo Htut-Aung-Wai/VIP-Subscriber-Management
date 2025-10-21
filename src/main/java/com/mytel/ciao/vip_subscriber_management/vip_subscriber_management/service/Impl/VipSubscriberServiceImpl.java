@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.Basic;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.ResponseFactory;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.utils.Translator;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.utils.Util;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.constant.ErrorCode;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.constant.VipSubscriberLogActionType;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.dto.VipSubscriberExcelImportCreateErrorDto;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.dto.VipSubscriberRequest;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.VipSubscriber;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.VipSubscriberLog;
@@ -16,8 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -39,11 +41,13 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
     private final VipSubscriberRepo vipSubscriberRepo;
     private final ResponseFactory responseFactory;
     private final VipSubscriberLogService vipSubscriberLogService;
+    private final Util util;
 
-    public VipSubscriberServiceImpl(VipSubscriberRepo vipSubscriberRepo, ResponseFactory responseFactory, VipSubscriberLogService vipSubscriberLogService) {
+    public VipSubscriberServiceImpl(VipSubscriberRepo vipSubscriberRepo, ResponseFactory responseFactory, VipSubscriberLogService vipSubscriberLogService, Util util) {
         this.vipSubscriberRepo = vipSubscriberRepo;
         this.responseFactory = responseFactory;
         this.vipSubscriberLogService = vipSubscriberLogService;
+        this.util = util;
     }
 
     @Override
@@ -53,8 +57,17 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
             log.info("Creating Vip Subscriber ................");
 
+            if(!util.isMytelNumber(vipSubscriberRequest.getSubscriberNo()))
+            {
+                return responseFactory.buildError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        ErrorCode.INTERNAL_ERROR,
+                        ErrorCode.FAIL,
+                        "[Failed] The phone number is not Mytel number."
+                );
+            }
+
             VipSubscriber vipSubscriber=vipSubscriberRequestToVipSubscriber(vipSubscriberRequest);
-            vipSubscriber.setRegistrationDate(Timestamp.valueOf(LocalDateTime.now()));
             VipSubscriber vipSubscriberSaved=vipSubscriberRepo.save(vipSubscriber);
 
             log.info("[Succeed] Creating Vip Subscriber");
@@ -67,6 +80,20 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
             );
 
         }
+
+        catch (DataIntegrityViolationException e) {
+            log.error("[Failed] Duplicate Subscriber number.Subscriber already existed : {}", vipSubscriberRequest.getSubscriberNo());
+            vipSubscriberLogService.errorlog(null,vipSubscriberRequest.getSubscriberNo(),
+                    VipSubscriberLogActionType.CREATE.name(),
+                    "Duplicate Subscriber number.Subscriber already existed");
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "[Failed] Duplicate Subscriber number.Subscriber already existed"
+            );
+        }
+
         catch (Exception e) {
             log.error("[Failed] Error occurred while creating Vip Subscriber: {}", e.getMessage(), e);
             vipSubscriberLogService.errorlog(null,vipSubscriberRequest.getSubscriberNo(),
@@ -265,10 +292,11 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
     private VipSubscriber vipSubscriberRequestToVipSubscriber(VipSubscriberRequest vipSubscriberRequest)
     {
         VipSubscriber vipSubscriber=new VipSubscriber();
-        vipSubscriber.setSubscriberNo(vipSubscriberRequest.getSubscriberNo());
+        vipSubscriber.setSubscriberNo(util.normalizeIsdn(vipSubscriberRequest.getSubscriberNo()));
         vipSubscriber.setVipPackageId(vipSubscriberRequest.getVipPackageId());
         vipSubscriber.setBranchName(vipSubscriberRequest.getBranchName());
         vipSubscriber.setProposalDocumentNo(vipSubscriberRequest.getProposalDocumentNo());
+        vipSubscriber.setRegistrationDate(Timestamp.valueOf(LocalDateTime.now()));
         vipSubscriber.setDeleted(false);
         log.info("Saved Vip Subscriber No : {}",vipSubscriber.getSubscriberNo());
 
@@ -280,22 +308,15 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
 
     @Override
-    public ResponseEntity<Basic> importData(MultipartFile file) {
+    public ResponseEntity<?> importData(MultipartFile file) {
         // Increase the maximum allowable byte array size for Apache POI
         org.apache.poi.util.IOUtils.setByteArrayMaxOverride(200_000_000);
 
-        /*File tempDir = new File(tempDirPath);
-        if (!tempDir.exists()) {
-            tempDir.mkdirs(); // Create directory if it does not exist
-        }
-
-        // Create a unique filename and store it in the temporary folder
-        String tempFilePath = tempDirPath + "/" + UUID.randomUUID().toString() + ".xlsx";
-        File tempFile = new File(tempFilePath);*/
-
         List<VipSubscriber> vipSubscribers = new ArrayList<>();
+        List<VipSubscriberExcelImportCreateErrorDto> errorList = new ArrayList<>();
+        Set<String> seenGlobal = new HashSet<>();
 
-        //try (InputStream inputStream = new FileInputStream(tempFile)) {
+
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
@@ -332,29 +353,37 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
                 );
             }
 
+
+            // Fetch all existing subscriber numbers from DB
+            Set<String> existingNumbers = new HashSet<>(vipSubscriberRepo.findAllSubscriberNumbers());
+
             // Process data rows
             while (rows.hasNext()) {
                 Row row = rows.next();
                 if (row.getPhysicalNumberOfCells() != 4) {
-                    return responseFactory.buildError(
-                            HttpStatus.INTERNAL_SERVER_ERROR,
-                            ErrorCode.INTERNAL_ERROR,
-                            ErrorCode.FAIL,
+                    errorList.add(new VipSubscriberExcelImportCreateErrorDto(
+                            null,
                             "Row format is invalid. Each row must have exactly 4 columns."
-                    );
+                    ));
+                    continue;
                 }
 
-                try {
-                    VipSubscriber vipSubscriber = new VipSubscriber();
-                    vipSubscriber.setVipPackageId(getCellValueAsString(row.getCell(0)));
-                    vipSubscriber.setSubscriberNo(getCellValueAsString(row.getCell(1)));
-                    vipSubscriber.setBranchName(getCellValueAsString(row.getCell(2)));
-                    vipSubscriber.setProposalDocumentNo(getCellValueAsString(row.getCell(3)));
-                    vipSubscriber.setRegistrationDate(Timestamp.valueOf(LocalDateTime.now()));
-                    //vipSubscriber.setExpiryDate();
-                    vipSubscriber.setDeleted(false);
 
-                    vipSubscribers.add(vipSubscriber);
+                String vipPackageId = getCellValueAsString(row.getCell(0));
+                String subscriberNo = getCellValueAsString(row.getCell(1));
+                String branchName = getCellValueAsString(row.getCell(2));
+                String proposalDocumentNo = getCellValueAsString(row.getCell(3));
+
+
+                try {
+
+
+                    if (checkValidSubscriberNumber(subscriberNo, errorList, seenGlobal,existingNumbers)) {
+                        VipSubscriberRequest vipSubscriberRequest=new VipSubscriberRequest(vipPackageId,subscriberNo,branchName,proposalDocumentNo);
+                        VipSubscriber vipSubscriberSaved=vipSubscriberRequestToVipSubscriber(vipSubscriberRequest);
+
+                        vipSubscribers.add(vipSubscriberSaved);
+                    }
 
 
                     // Process in batches (for example, every 500 records)
@@ -363,12 +392,8 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
                         vipSubscribers.clear();  // Clear the list after saving
                     }
                 } catch (Exception e) {
-                    return responseFactory.buildError(
-                            HttpStatus.INTERNAL_SERVER_ERROR,
-                            ErrorCode.INTERNAL_ERROR,
-                            ErrorCode.FAIL,
-                            "Error processing row: " + e.getMessage()
-                    );
+                    errorList.add(new VipSubscriberExcelImportCreateErrorDto(subscriberNo,
+                            "Error processing row: " + e.getMessage()));
                 }
             }
 
@@ -377,13 +402,11 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
                 saveBatchVipSubscriber(vipSubscribers, 500);
             }
 
-            // Delete the temporary file after successful import
-            /*if (tempFile.exists()) {
-                boolean deleted = tempFile.delete();
-                if (!deleted) {
-                    log.warn("[Failed] Failed to delete the temp file: " + tempFilePath);
-                }
-            }*/
+
+            if(!errorList.isEmpty()) {
+                return exportVipSubscriberErrorList(errorList);
+            }
+
 
             return responseFactory.buildSuccess(
                     HttpStatus.OK,
@@ -401,6 +424,27 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
                     "Error while processing the file: " + e.getMessage()
             );
         }
+    }
+
+
+    private boolean checkValidSubscriberNumber(
+            String subscriberNumber,
+            List<VipSubscriberExcelImportCreateErrorDto> errorList,
+            Set<String> seenGlobal,
+            Set<String> existingNumbers
+    ) {
+        if (subscriberNumber == null || subscriberNumber.isEmpty()) {
+            errorList.add(new VipSubscriberExcelImportCreateErrorDto(subscriberNumber, "Phone number is missing"));
+        } else if (!util.isMytelNumber(util.toIsdn(subscriberNumber))) {
+            errorList.add(new VipSubscriberExcelImportCreateErrorDto(subscriberNumber, "Phone number is not Mytel number"));
+        } else if (!seenGlobal.add(subscriberNumber)) { // duplicates in Excel
+            errorList.add(new VipSubscriberExcelImportCreateErrorDto(subscriberNumber, "Duplicate phone number in Excel"));
+        } else if (existingNumbers.contains(subscriberNumber)) { // duplicates in DB
+            errorList.add(new VipSubscriberExcelImportCreateErrorDto(subscriberNumber, "Phone number already exists in database"));
+        } else {
+            return true; // valid
+        }
+        return false; // invalid
     }
 
     public void saveBatchVipSubscriber(List<VipSubscriber> saveList, int batchSize) {
@@ -585,6 +629,69 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
                     ErrorCode.INTERNAL_ERROR,
                     ErrorCode.FAIL,
                     "[Failed] Error occurred while fetching or exporting all Vip Subscribers"
+            );
+        }
+
+
+
+
+    }
+
+
+    public ResponseEntity<?> exportVipSubscriberErrorList(List<VipSubscriberExcelImportCreateErrorDto> errorList) {
+
+        try {
+            // Create a new workbook and sheet
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet("Import Errors");
+
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("Subscriber No");
+            headerRow.createCell(1).setCellValue("Error Description");
+
+
+            // Row
+            int rowNum = 1; // start after header
+            for (VipSubscriberExcelImportCreateErrorDto eachError : errorList) {
+                Row row = sheet.createRow(rowNum++);
+
+                // Make sure your VipSubscriber entity has these getter methods
+                row.createCell(0).setCellValue(
+                        eachError.getPhoneNumber() != null ? eachError.getPhoneNumber() : ""
+                );
+                row.createCell(1).setCellValue(
+                        eachError.getError() != null ? eachError.getError() : ""
+                );
+            }
+
+            //Auto resize
+            for (int i = 0; i < 2; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+
+            // Write the output to a ByteArrayOutputStream
+            try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                workbook.write(byteArrayOutputStream);
+
+                // Set headers for file download
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Disposition", "attachment; filename=VIP_Subscriber_Import_Error.xlsx");
+                headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+                // Return the Excel file as a byte array
+                return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+
+            }
+
+        } catch (Exception e) {
+            log.error("[Failed] Error occurred while exporting error list: {}", e.getMessage(), e);
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "[Failed] Error occurred while exporting error list"
             );
         }
 

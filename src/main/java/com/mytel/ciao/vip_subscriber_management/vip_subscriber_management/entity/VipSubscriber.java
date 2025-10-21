@@ -23,7 +23,7 @@ public class VipSubscriber extends BaseEntity{
     @Column(name = "VIP_PACKAGE_ID")
     private String vipPackageId;
 
-    @Column(name = "SUBSCRIBER_NO")
+    @Column(name = "SUBSCRIBER_NO", nullable = false, unique = true)
     private String subscriberNo;
 
     @Column(name = "BRANCH")

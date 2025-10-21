@@ -63,7 +63,7 @@ public class VipSubscriberController {
 
 
     @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Basic> importData(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> importData(@RequestParam("file") MultipartFile file) {
         log.info("Received imported request to create vip subscriber through File");
         return vipSubscriberService.importData(file);
     }

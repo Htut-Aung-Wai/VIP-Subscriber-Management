@@ -19,6 +19,10 @@ public interface VipSubscriberRepo extends JpaRepository<VipSubscriber,String> {
     @Query("SELECT v FROM VipSubscriber v WHERE v.isDeleted = false")
     List<VipSubscriber> findAllActive();
 
+    @Query("SELECT v.subscriberNo FROM VipSubscriber v WHERE v.isDeleted = false")
+    List<String> findAllSubscriberNumbers();
+
+
 
 
 
