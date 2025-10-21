@@ -2,7 +2,6 @@ package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.mail.
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.mail.EmailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component

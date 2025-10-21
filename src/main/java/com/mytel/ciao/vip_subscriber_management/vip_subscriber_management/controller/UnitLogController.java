@@ -1,8 +1,8 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.controller;
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.ResponseFactory;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitHeadLog;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitHeadLogService;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitLog;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +16,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/unit-log")
-public class UnitHeadLogController {
+public class UnitLogController {
 
-    private final UnitHeadLogService service;
+    private final UnitLogService service;
     private final ResponseFactory factory;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllLogs() {
-        List<UnitHeadLog> logs = service.getAllLogs();
+        List<UnitLog> logs = service.getAllLogs();
 
         return factory.buildSuccess(
                 HttpStatus.OK,
@@ -34,7 +34,7 @@ public class UnitHeadLogController {
 
     @GetMapping("/{unitName}")
     public ResponseEntity<?> getLogsByUnitName(@PathVariable String unitName) {
-        List<UnitHeadLog> logs = service.getLogsByUnitName(unitName);
+        List<UnitLog> logs = service.getLogsByUnitName(unitName);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
@@ -46,13 +46,13 @@ public class UnitHeadLogController {
     @GetMapping("/{unitName}/{actionType}")
     public ResponseEntity<?> getLogsByUnitNameAndAction(
             @PathVariable String unitName,
-            @PathVariable UnitHeadLog.ActionType actionType) {
-        List<UnitHeadLog> logs = service.getLogsByUnitNameAndAction(unitName, actionType);
+            @PathVariable UnitLog.ActionType actionType) {
+        List<UnitLog> logs = service.getLogsByUnitNameAndAction(unitName, actionType);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 logs,
                 "200",
-                unitName + " Unit Head Retrieved.");
+                unitName + " Unit Logs Retrieved.");
     }
 }

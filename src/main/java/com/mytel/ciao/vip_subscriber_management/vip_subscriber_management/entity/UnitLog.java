@@ -5,13 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
 @Table(name = "CAIO_VIP_UNIT_LOG")
-public class UnitHeadLog {
+public class UnitLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,38 +34,42 @@ public class UnitHeadLog {
     @Column(name = "PHONE")
     private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ACTION_TYPE")
-    private ActionType actionType;
+    @Column(name = "REMARK", length = 1000)
+    private String remark;
 
-    @Column(name = "ORIGINAL_FIELDS", length = 1000)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ACTION")
+    private ActionType action;
+
+    @Column(length = 1000, name = "ORIGINAL_FIELDS")
     private String originalFields;
 
-    @Column(name = "CHANGED_FIELDS", length = 1000)
-    private String changedFields;
+    @Column(length = 1000, name = "UPDATED_FIELDS")
+    private String updatedFields;
 
     @Column(name = "CREATED_AT", updatable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-    private LocalDateTime createdAt;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private Timestamp createdAt;
 
     @Column(name = "LAST_UPDATED_AT")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-    private LocalDateTime lastUpdatedAt;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private Timestamp lastUpdatedAt;
+
+    @PrePersist
+    public void onCreate() {
+        if (createdAt == null) {
+            createdAt = Timestamp.valueOf(LocalDateTime.now());
+        }
+        lastUpdatedAt = Timestamp.valueOf(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        lastUpdatedAt = Timestamp.valueOf(LocalDateTime.now());
+    }
 
     public enum ActionType {
         CREATED, UPDATED, DELETED
     }
 
-    @PrePersist
-    public void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-        lastUpdatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void onUpdate() {
-        lastUpdatedAt = LocalDateTime.now();
-    }
 }
