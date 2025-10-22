@@ -26,12 +26,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -447,7 +448,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
         return false; // invalid
     }
 
-    public void saveBatchVipSubscriber(List<VipSubscriber> saveList, int batchSize) {
+    private void saveBatchVipSubscriber(List<VipSubscriber> saveList, int batchSize) {
         try {
             int total = saveList.size();
             int current = 0, next;
@@ -638,7 +639,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
     }
 
 
-    public ResponseEntity<?> exportVipSubscriberErrorList(List<VipSubscriberExcelImportCreateErrorDto> errorList) {
+    private ResponseEntity<?> exportVipSubscriberErrorList(List<VipSubscriberExcelImportCreateErrorDto> errorList) {
 
         try {
             // Create a new workbook and sheet
@@ -670,18 +671,42 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
                 sheet.autoSizeColumn(i);
             }
 
+            // Save file temporarily
+            String fileName = "VIP_Subscriber_Import_Error_" + System.currentTimeMillis() + ".xlsx";
+            Path filePath = Paths.get(System.getProperty("java.io.tmpdir"), fileName);
+
 
             // Write the output to a ByteArrayOutputStream
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 workbook.write(byteArrayOutputStream);
 
-                // Set headers for file download
+                /*// Set headers for file download
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("Content-Disposition", "attachment; filename=VIP_Subscriber_Import_Error.xlsx");
-                headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");*/
+
+                // Build download URL (assuming your app runs on localhost:8080)
+                String downloadUrl = "/vip-subscriber/download/" + fileName;
+
+                Files.write(filePath, byteArrayOutputStream.toByteArray());
+
+               /* // Return the link in JSON
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Error list generated successfully.");
+                response.put("downloadLink", downloadUrl);
+
+                return ResponseEntity.ok(response);*/
+                return responseFactory.buildSuccess(
+                        HttpStatus.OK,
+                        "Completed",
+                        ErrorCode.SUCCESS,
+                        "Upload completed. Some records were not added due to duplicates or validation errors. "
+                                + "The Result Report is below for download: "
+                                + "<a href='" + downloadUrl + "' download>Click here to download</a>"
+                );
 
                 // Return the Excel file as a byte array
-                return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+                //return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 
             }
 
