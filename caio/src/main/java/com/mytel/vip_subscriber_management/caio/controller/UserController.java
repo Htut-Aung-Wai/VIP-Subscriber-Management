@@ -71,7 +71,7 @@ public class UserController {
                 HttpStatus.OK,
                 users,
                 "200",
-                "All Branch Manager Retrieved."
+                "All Branch Managers Retrieved."
         );
     }
 

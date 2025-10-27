@@ -2,9 +2,6 @@ package com.mytel.vip_subscriber_management.service.service;
 
 
 
-import com.mytel.vip_subscriber_management.database.entity.Unit;
-import com.mytel.vip_subscriber_management.database.entity.UnitLog;
-
 import java.util.List;
 
 public interface UnitLogService {

@@ -47,7 +47,7 @@ public class ExpiringVipSubscriberController {
                 "Expiring Subscribers at next 2-Month.");
     }
 
-    @GetMapping("/export-excel/{branch}")
+    @GetMapping("/export/{branch}")
     public ResponseEntity<Resource> exportExpiringSubscribersXlsx(@PathVariable("branch") String branch) throws IOException {
         List<VipSubscriber> expiring = service.getExpiringSubscriberFilteredByBranchName(branch);
         ByteArrayInputStream in = ExcelExport.exportToExcel(expiring);

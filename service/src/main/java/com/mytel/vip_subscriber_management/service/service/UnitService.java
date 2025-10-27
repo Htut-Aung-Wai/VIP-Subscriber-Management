@@ -2,8 +2,6 @@ package com.mytel.vip_subscriber_management.service.service;
 
 
 
-import com.mytel.vip_subscriber_management.database.entity.Unit;
-
 import java.util.List;
 
 public interface UnitService {
