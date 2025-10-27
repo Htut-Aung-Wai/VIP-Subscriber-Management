@@ -42,6 +42,8 @@ public class VipSubscriber extends BaseEntity{
     private boolean isDeleted;
 
 
-
+    @ManyToOne
+    @JoinColumn(name = "BRANCH_ID")
+    private Branch branch;
 
 }

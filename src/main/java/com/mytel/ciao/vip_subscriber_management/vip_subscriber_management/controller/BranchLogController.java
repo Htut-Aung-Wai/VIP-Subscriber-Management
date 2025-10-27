@@ -1,8 +1,8 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.controller;
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.ResponseFactory;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitLog;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitLogService;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.BranchLog;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.BranchLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,44 +15,44 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/unit-log")
-public class UnitLogController {
+@RequestMapping("/branch-log")
+public class BranchLogController {
 
-    private final UnitLogService service;
+    private final BranchLogService service;
     private final ResponseFactory factory;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllLogs() {
-        List<UnitLog> logs = service.getAllLogs();
+        List<BranchLog> logs = service.getAllLogs();
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 logs,
                 "200",
-                "All Unit Logs Retrieved.");
+                "All Branches Logs Retrieved.");
     }
 
-    @GetMapping("/{unitName}")
-    public ResponseEntity<?> getLogsByUnitName(@PathVariable String unitName) {
-        List<UnitLog> logs = service.getLogsByUnitName(unitName);
+    @GetMapping("/{branchName}")
+    public ResponseEntity<?> getLogsByBranchName(@PathVariable String branchName) {
+        List<BranchLog> logs = service.getLogsByBranchName(branchName);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 logs,
                 "200",
-                unitName + " Unit Logs Retrieved.");
+                branchName + " Branch Logs Retrieved.");
     }
 
-    @GetMapping("/{unitName}/{actionType}")
-    public ResponseEntity<?> getLogsByUnitNameAndAction(
-            @PathVariable String unitName,
+    @GetMapping("/{branchName}/{actionType}")
+    public ResponseEntity<?> getLogsByBranchNameAndAction(
+            @PathVariable String branchName,
             @PathVariable String actionType) {
-        List<UnitLog> logs = service.getLogsByUnitNameAndAction(unitName, actionType);
+        List<BranchLog> logs = service.getLogsByBranchNameAndAction(branchName, actionType);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 logs,
                 "200",
-                unitName + " Unit Logs Retrieved.");
+                branchName + " Branch Logs Retrieved.");
     }
 }

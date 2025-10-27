@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/expire-subscribers")
+@RequestMapping("/expire-subscribers")
 public class ExpiringVipSubscriberController {
 
     private final ExpiringVipSubscriberService service;
@@ -44,7 +44,7 @@ public class ExpiringVipSubscriberController {
                 "Expiring Subscribers at next 2-Month.");
     }
 
-    @GetMapping("/export-excel/{branch}")
+    @GetMapping("/export/{branch}")
     public ResponseEntity<Resource> exportExpiringSubscribersXlsx(@PathVariable("branch") String branch) throws IOException {
         List<VipSubscriber> expiring = service.getExpiringSubscriberFilteredByBranchName(branch);
         ByteArrayInputStream in = ExcelExport.exportToExcel(expiring);
