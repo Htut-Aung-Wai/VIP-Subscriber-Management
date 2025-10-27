@@ -1,9 +1,10 @@
 package com.mytel.vip_subscriber_management.service.service.Impl;
 
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.Branch;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.BranchLog;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.repository.BranchLogRepo;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.BranchLogService;
+
+import com.mytel.vip_subscriber_management.database.entity.Branch;
+import com.mytel.vip_subscriber_management.database.entity.BranchLog;
+import com.mytel.vip_subscriber_management.database.repository.BranchLogRepo;
+import com.mytel.vip_subscriber_management.service.service.BranchLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
