@@ -1,14 +1,14 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.repository;
 
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitLog;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.BranchLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface UnitLogRepo extends JpaRepository<UnitLog, Long> {
+public interface BranchLogRepo extends JpaRepository<BranchLog, Long> {
 
-    List<UnitLog> findByUnitName(String unitName);
+    List<BranchLog> findByBranchName(String branchName);
 
-    List<UnitLog> findByUnitNameAndAction(String unitName, String actionType);
+    List<BranchLog> findByBranchNameAndAction(String branchName, String actionType);
 
 }

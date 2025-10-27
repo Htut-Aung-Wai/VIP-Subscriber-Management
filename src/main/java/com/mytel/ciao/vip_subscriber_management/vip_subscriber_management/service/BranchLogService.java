@@ -1,21 +1,21 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service;
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.Branch;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitLog;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.BranchLog;
 
 import java.util.List;
 
-public interface UnitLogService {
+public interface BranchLogService {
 
     void logCreated(Branch branch);
 
-    UnitLog logUpdated(Branch oldBranch, Branch newBranch);
+    BranchLog logUpdated(Branch oldBranch, Branch newBranch);
 
     void logDeleted(Branch deletedBranch);
 
-    List<UnitLog> getAllLogs();
+    List<BranchLog> getAllLogs();
 
-    List<UnitLog> getLogsByUnitName(String unitName);
+    List<BranchLog> getLogsByBranchName(String branchName);
 
-    List<UnitLog> getLogsByUnitNameAndAction(String unitName, String actionType);
+    List<BranchLog> getLogsByBranchNameAndAction(String branchName, String actionType);
 }

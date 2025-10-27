@@ -6,14 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface UnitRepo extends JpaRepository<Branch, Long> {
+public interface BranchRepo extends JpaRepository<Branch, Long> {
 
-    List<Branch> findByUnitName(String unitName);
+    List<Branch> findByBranchName(String branchName);
 
-    List<Branch> findByUnitHeadFullName(String unitHeadFullName);
+    List<Branch> findByBranchManagerName(String branchManagerName);
 
-    Optional<Branch> findByUnitCode(String unitCode);
+    Optional<Branch> findByBranchCode(String branchCode);
 
-    boolean existsByUnitCode(String unitCode);
+    boolean existsByBranchCode(String branchCode);
 
 }

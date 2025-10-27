@@ -2,7 +2,7 @@ package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.contr
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.ResponseFactory;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.Branch;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitService;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.BranchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,75 +12,75 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/unit")
-public class UnitController {
+@RequestMapping("/branch")
+public class BranchController {
 
-    private final UnitService service;
+    private final BranchService service;
     private final ResponseFactory factory;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUnit(@RequestBody Branch branch) {
-        Branch created = service.createUnit(branch);
+    public ResponseEntity<?> createBranch(@RequestBody Branch branch) {
+        Branch created = service.createBranch(branch);
 
         return factory.buildSuccess(
                 HttpStatus.CREATED,
                 created,
                 "201",
-                "Unit Creation Success.");
+                "Branch Creation Success.");
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllUnit() {
-        List<Branch> allBranch = service.getAllUnit();
+    public ResponseEntity<?> getAllBranch() {
+        List<Branch> allBranch = service.getAllBranch();
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 allBranch,
                 "200",
-                "All Unit Retrieved.");
+                "All Branches Retrieved.");
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUnitById(@PathVariable("id") Long id) {
-        Branch branch = service.getUnitById(id);
+    public ResponseEntity<?> getBranchById(@PathVariable("id") Long id) {
+        Branch branch = service.getBranchById(id);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 branch,
                 "200",
-                "Id " + id + "Unit Retrieved.");
+                "Id " + id + " Branch Retrieved.");
     }
 
-    @GetMapping("/unit-head-full-name/{unitHeadFullName}")
-    public ResponseEntity<?> getUnitByUnitHeadFullName(@PathVariable("unitHeadFullName") String unitHeadFullName) {
-        List<Branch> branch = service.getUnitByUnitHeadFullName(unitHeadFullName);
+    @GetMapping("/branch-manager-name/{branchManagerName}")
+    public ResponseEntity<?> getBranchByBranchManagerName(@PathVariable("branchManagerName") String branchManagerName) {
+        List<Branch> branch = service.getBranchByBranchManagerName(branchManagerName);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 branch,
                 "200",
-                unitHeadFullName + " Unit Retrieved.");
+                branchManagerName + "'s Branch Retrieved.");
     }
 
-    @PutMapping("/update/{unitCode}")
-    public ResponseEntity<?> updateUnitByUnitCode(@PathVariable("unitCode") String unitCode, @RequestBody Branch branch) {
-        Branch updated = service.updateUnitByUnitCode(unitCode, branch);
+    @PutMapping("/update/{branchCode}")
+    public ResponseEntity<?> updateBranchByBranchCode(@PathVariable("branchCode") String branchCode, @RequestBody Branch branch) {
+        Branch updated = service.updateBranchByBranchCode(branchCode, branch);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 updated,
                 "200",
-                unitCode + " Unit Updated. Unit Code Is Read-Only!");
+                branchCode + " Branch Updated. Branch Code Is Read-Only!");
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteUnit(@PathVariable("id") Long id) {
-        service.deleteUnit(id);
+    public ResponseEntity<?> deleteBranch(@PathVariable("id") Long id) {
+        service.deleteBranch(id);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
                 null,
                 "200",
-                "Unit Deleted.");
+                "Branch Deleted.");
     }
 }

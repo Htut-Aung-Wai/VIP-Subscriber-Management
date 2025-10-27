@@ -4,17 +4,17 @@ import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity
 
 import java.util.List;
 
-public interface UnitService {
+public interface BranchService {
 
-    Branch createUnit(Branch branch);
+    Branch createBranch(Branch branch);
 
-    List<Branch> getAllUnit();
+    List<Branch> getAllBranch();
 
-    Branch getUnitById(Long id);
+    Branch getBranchById(Long id);
 
-    List<Branch> getUnitByUnitHeadFullName(String unitHeadFullName);
+    List<Branch> getBranchByBranchManagerName(String branchManagerName);
 
-    Branch updateUnitByUnitCode(String unitCode, Branch updated);
+    Branch updateBranchByBranchCode(String branchCode, Branch updated);
 
-    void deleteUnit(Long id);
+    void deleteBranch(Long id);
 }

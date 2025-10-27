@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/branch-manager")
+@RequestMapping("/branch-manager")
 public class UserController {
 
     private final UserService service;
@@ -70,7 +70,7 @@ public class UserController {
                 HttpStatus.OK,
                 users,
                 "200",
-                "All Branch Manager Retrieved."
+                "All Branch Managers Retrieved."
         );
     }
 
