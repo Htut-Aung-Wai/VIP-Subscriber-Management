@@ -26,9 +26,9 @@ public class JwtUtils {
     }
 
     // Generate JWT Token
-    public String generateToken(String userId) {
+    public String generateToken(String isdn) {
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(isdn)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key)
@@ -49,7 +49,7 @@ public class JwtUtils {
     }
 
     // Extract VMYCode (subject) from token
-    public String extractUserId(String token) {
+    public String extractIsdn(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

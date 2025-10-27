@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 
 @Slf4j
 @RestController
-@RequestMapping("/vip-subscriber")
+@RequestMapping("/caio/vip-subscriber")
 public class VipSubscriberController {
 
 

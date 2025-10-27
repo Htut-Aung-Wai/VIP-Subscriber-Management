@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/unit-log")
+@RequestMapping("/caio/unit-log")
 public class UnitLogController {
 
     private final UnitLogService service;

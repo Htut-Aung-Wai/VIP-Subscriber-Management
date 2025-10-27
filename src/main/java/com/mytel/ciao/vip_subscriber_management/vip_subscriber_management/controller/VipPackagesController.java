@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/packages")
+@RequestMapping("/caio/packages")
 public class VipPackagesController {
 
     private final VipPackageService service;

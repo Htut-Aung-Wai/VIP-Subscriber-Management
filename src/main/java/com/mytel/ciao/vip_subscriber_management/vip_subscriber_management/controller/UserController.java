@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/branch-manager")
+@RequestMapping("/caio/branch-manager")
 public class UserController {
 
     private final UserService service;

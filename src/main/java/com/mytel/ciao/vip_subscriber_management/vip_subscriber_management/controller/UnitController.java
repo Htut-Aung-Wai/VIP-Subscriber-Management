@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/unit")
+@RequestMapping("/caio/unit")
 public class UnitController {
 
     private final UnitService service;

@@ -1,4 +1,3 @@
-/*
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.config;
 
 import org.keycloak.adapters.KeycloakConfigResolver;
@@ -9,6 +8,7 @@ import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurer
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +24,7 @@ import java.util.Collections;
 
 @KeycloakConfiguration
 @EnableGlobalMethodSecurity(securedEnabled = true)
-@Order(1)
+@Order(2)
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     @Autowired
@@ -51,10 +51,12 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http
+                .antMatcher("/caio/**") // only apply to /caio endpoints
                 .csrf().disable()
                 .cors()
                 .and().authorizeRequests()
-                .antMatchers("/vip-subscriber-management/**").hasAnyRole("ciao_cc_director", "ciao_cc_bo", "ciao_cc_agent")
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .antMatchers("/caio/**").hasAnyRole("ciao_cc_director", "ciao_cc_bo", "ciao_cc_agent")
                 .anyRequest().authenticated();
     }
 
@@ -70,4 +72,4 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-}*/
+}

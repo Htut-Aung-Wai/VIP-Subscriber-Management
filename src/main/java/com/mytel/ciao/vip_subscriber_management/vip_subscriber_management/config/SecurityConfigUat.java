@@ -1,3 +1,4 @@
+/*
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.config;
 
 import org.springframework.context.annotation.Bean;
@@ -20,3 +21,4 @@ public class SecurityConfigUat {
         return http.build();
     }
 }
+*/

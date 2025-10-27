@@ -1,7 +1,9 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.controller;
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.excel.ExcelExport;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.Basic;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.ResponseFactory;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.constant.ErrorCode;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.VipSubscriber;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.ExpiringVipSubscriberService;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +26,14 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/expire-subscribers")
+@RequestMapping("/confirm-page/expire-subscribers")
 public class ExpiringVipSubscriberController {
 
     private final ExpiringVipSubscriberService service;
     private final ResponseFactory factory;
 
     /**
-     * For Landing Page
+     * For Confirm Page
      */
     @GetMapping("/{branch}")
     public ResponseEntity<?> getExpiringSubscribersByBranchName(@PathVariable("branch") String branch) {
@@ -57,6 +59,18 @@ public class ExpiringVipSubscriberController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=expiring_subscribers.xlsx")
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(file);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<Basic> testSecurity() {
+
+
+        return factory.buildSuccess(
+                HttpStatus.OK,
+                "Secuity test succeed",
+                ErrorCode.SUCCESS,
+                "[Succeed]"
+        );
     }
 
 }
