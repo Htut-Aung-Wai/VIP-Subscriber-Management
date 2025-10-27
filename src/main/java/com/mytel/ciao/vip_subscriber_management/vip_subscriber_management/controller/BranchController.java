@@ -1,7 +1,7 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.controller;
 
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.common.response.ResponseFactory;
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.Unit;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.Branch;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,8 +19,8 @@ public class UnitController {
     private final ResponseFactory factory;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUnit(@RequestBody Unit unit) {
-        Unit created = service.createUnit(unit);
+    public ResponseEntity<?> createUnit(@RequestBody Branch branch) {
+        Branch created = service.createUnit(branch);
 
         return factory.buildSuccess(
                 HttpStatus.CREATED,
@@ -31,40 +31,40 @@ public class UnitController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllUnit() {
-        List<Unit> allUnit = service.getAllUnit();
+        List<Branch> allBranch = service.getAllUnit();
 
         return factory.buildSuccess(
                 HttpStatus.OK,
-                allUnit,
+                allBranch,
                 "200",
                 "All Unit Retrieved.");
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUnitById(@PathVariable("id") Long id) {
-        Unit unit = service.getUnitById(id);
+        Branch branch = service.getUnitById(id);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
-                unit,
+                branch,
                 "200",
                 "Id " + id + "Unit Retrieved.");
     }
 
-    @GetMapping("/unit-full-name/{unitFullName}")
-    public ResponseEntity<?> getUnitByUnitFullName(@PathVariable("unitFullName") String unitFullName) {
-        List<Unit> unit = service.getUnitByUnitFullName(unitFullName);
+    @GetMapping("/unit-head-full-name/{unitHeadFullName}")
+    public ResponseEntity<?> getUnitByUnitHeadFullName(@PathVariable("unitHeadFullName") String unitHeadFullName) {
+        List<Branch> branch = service.getUnitByUnitHeadFullName(unitHeadFullName);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
-                unit,
+                branch,
                 "200",
-                unitFullName + " Unit Retrieved.");
+                unitHeadFullName + " Unit Retrieved.");
     }
 
     @PutMapping("/update/{unitCode}")
-    public ResponseEntity<?> updateUnitByUnitCode(@PathVariable("unitCode") String unitCode, @RequestBody Unit unit) {
-        Unit updated = service.updateUnitByUnitCode(unitCode, unit);
+    public ResponseEntity<?> updateUnitByUnitCode(@PathVariable("unitCode") String unitCode, @RequestBody Branch branch) {
+        Branch updated = service.updateUnitByUnitCode(unitCode, branch);
 
         return factory.buildSuccess(
                 HttpStatus.OK,

@@ -1,6 +1,6 @@
 package com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.Impl;
 
-import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.Unit;
+import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.Branch;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.exception.CommonException;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.entity.UnitLog;
 import com.mytel.ciao.vip_subscriber_management.vip_subscriber_management.service.UnitLogService;
@@ -22,65 +22,65 @@ public class UnitServiceImpl implements UnitService {
     private final UnitLogService service;
 
     @Override
-    public Unit createUnit(Unit unit) {
-        if (repo.existsByUnitCode(unit.getUnitCode())) {
-            throw new CommonException("Unit Code " + unit.getUnitCode() + " Already Exist! Please Change.");
+    public Branch createUnit(Branch branch) {
+        if (repo.existsByUnitCode(branch.getUnitCode())) {
+            throw new CommonException("Unit Code " + branch.getUnitCode() + " Already Exist! Please Change.");
         }
         LocalDateTime now = LocalDateTime.now();
-        unit.setCreatedAt(Timestamp.valueOf(now));
-        unit.setLastUpdatedAt(Timestamp.valueOf(now));
-        Unit saved = repo.save(unit);
+        branch.setCreatedAt(Timestamp.valueOf(now));
+        branch.setLastUpdatedAt(Timestamp.valueOf(now));
+        Branch saved = repo.save(branch);
         service.logCreated(saved);
         return saved;
     }
 
     @Override
-    public List<Unit> getAllUnit() {
+    public List<Branch> getAllUnit() {
         return repo.findAll();
     }
 
     @Override
-    public Unit getUnitById(Long id) {
+    public Branch getUnitById(Long id) {
         return repo.findById(id)
                 .orElseThrow(() -> new CommonException("ERR_404", "Unit with ID " + id + " not found."));
     }
 
     @Override
-    public List<Unit> getUnitByUnitFullName(String unitFullName) {
-        List<Unit> results = repo.findByUnitFullName(unitFullName);
+    public List<Branch> getUnitByUnitHeadFullName(String unitHeadFullName) {
+        List<Branch> results = repo.findByUnitHeadFullName(unitHeadFullName);
         if (results.isEmpty()) {
-            throw new CommonException("Unit not found for: " + unitFullName);
+            throw new CommonException("Unit not found for: " + unitHeadFullName);
         }
         return results;
     }
 
     @Override
-    public Unit updateUnitByUnitCode(String unitCode, Unit updated) {
-        Unit existingUnitHead = repo.findByUnitCode(unitCode)
+    public Branch updateUnitByUnitCode(String unitCode, Branch updated) {
+        Branch existingBranchHead = repo.findByUnitCode(unitCode)
                 .orElseThrow(() -> new CommonException("ERR_404", "Unit with name " + unitCode + " not found."));
 
-        Unit oldUnit = new Unit();
-        BeanUtils.copyProperties(existingUnitHead, oldUnit);
+        Branch oldBranch = new Branch();
+        BeanUtils.copyProperties(existingBranchHead, oldBranch);
 
-        updated.setUnitCode(existingUnitHead.getUnitCode());
+        updated.setUnitCode(existingBranchHead.getUnitCode());
 
         if (isValid(updated.getUnitName())) {
-            existingUnitHead.setUnitName(updated.getUnitName());
+            existingBranchHead.setUnitName(updated.getUnitName());
         }
-        if (isValid(updated.getUnitFullName())) {
-            existingUnitHead.setUnitFullName(updated.getUnitFullName());
+        if (isValid(updated.getUnitHeadFullName())) {
+            existingBranchHead.setUnitHeadFullName(updated.getUnitHeadFullName());
         }
         if (isValid(updated.getEmail())) {
-            existingUnitHead.setEmail(updated.getEmail());
+            existingBranchHead.setEmail(updated.getEmail());
         }
         if (isValid(updated.getPhoneNumber())) {
-            existingUnitHead.setPhoneNumber(updated.getPhoneNumber());
+            existingBranchHead.setPhoneNumber(updated.getPhoneNumber());
         }
         if (isValid(updated.getRemark())) {
-            existingUnitHead.setRemark(updated.getRemark());
+            existingBranchHead.setRemark(updated.getRemark());
         }
-        Unit saved = repo.save(existingUnitHead);
-        UnitLog log = service.logUpdated(oldUnit, saved);
+        Branch saved = repo.save(existingBranchHead);
+        UnitLog log = service.logUpdated(oldBranch, saved);
         if (log != null && log.getLastUpdatedAt() != null) {
             saved.setLastUpdatedAt(log.getLastUpdatedAt());
         } else {
@@ -92,7 +92,7 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public void deleteUnit(Long id) {
-        Unit existing = repo.findById(id)
+        Branch existing = repo.findById(id)
                 .orElseThrow(() -> new CommonException("ERR_404",
                         "Unit Head with ID " + id + " not found."));
         repo.delete(existing);
