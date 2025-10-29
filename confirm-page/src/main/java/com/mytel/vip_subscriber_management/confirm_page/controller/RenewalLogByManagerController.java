@@ -1,8 +1,9 @@
-package com.mytel.vip_subscriber_management.common.renewal.controller;
+package com.mytel.vip_subscriber_management.confirm_page.controller;
 
-import com.example.vip_management.common.response.ResponseFactory;
-import com.example.vip_management.renewal.entity.RenewByManagerLog;
-import com.example.vip_management.renewal.service.RenewalLogByManagerService;
+
+import com.mytel.vip_subscriber_management.common.common.response.ResponseFactory;
+import com.mytel.vip_subscriber_management.database.entity.RenewByManagerLog;
+import com.mytel.vip_subscriber_management.service.service.RenewalLogByManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/renew-log-by-manager")
+@RequestMapping("/confirm-page/renew-log-by-manager")
 public class RenewalLogByManagerController {
 
     private final RenewalLogByManagerService service;

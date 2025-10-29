@@ -1,14 +1,14 @@
-package com.mytel.vip_subscriber_management.common.renewal.service.impl;
+package com.mytel.vip_subscriber_management.service.service.Impl;
 
-import com.example.vip_management.entity.VipSubscriber;
-import com.example.vip_management.exception.CommonException;
-import com.example.vip_management.renewal.dto.RenewalDto;
-import com.example.vip_management.renewal.entity.RenewByManager;
-import com.example.vip_management.renewal.repo.RenewByManagerRepo;
-import com.example.vip_management.renewal.service.RenewByManagerService;
-import com.example.vip_management.renewal.service.RenewalLogByManagerService;
-import com.example.vip_management.repo.VipSubscriberRepo;
-import com.example.vip_management.service.ExpiringVipSubscriberService;
+import com.mytel.vip_subscriber_management.common.exception.CommonException;
+import com.mytel.vip_subscriber_management.database.dto.RenewalDto;
+import com.mytel.vip_subscriber_management.database.entity.RenewByManager;
+import com.mytel.vip_subscriber_management.database.entity.VipSubscriber;
+import com.mytel.vip_subscriber_management.database.repository.RenewByManagerRepo;
+import com.mytel.vip_subscriber_management.database.repository.VipSubscriberRepo;
+import com.mytel.vip_subscriber_management.service.service.ExpiringVipSubscriberService;
+import com.mytel.vip_subscriber_management.service.service.RenewByManagerService;
+import com.mytel.vip_subscriber_management.service.service.RenewalLogByManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

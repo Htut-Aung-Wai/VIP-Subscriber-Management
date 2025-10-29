@@ -1,6 +1,7 @@
-package com.mytel.vip_subscriber_management.common.renewal.dto;
+package com.mytel.vip_subscriber_management.database.dto;
 
-import com.example.vip_management.renewal.entity.RenewByManager;
+
+import com.mytel.vip_subscriber_management.database.entity.RenewByManager;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

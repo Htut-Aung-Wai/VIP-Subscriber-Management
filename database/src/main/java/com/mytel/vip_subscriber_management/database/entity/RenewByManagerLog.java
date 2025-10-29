@@ -1,4 +1,4 @@
-package com.mytel.vip_subscriber_management.common.renewal.entity;
+package com.mytel.vip_subscriber_management.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

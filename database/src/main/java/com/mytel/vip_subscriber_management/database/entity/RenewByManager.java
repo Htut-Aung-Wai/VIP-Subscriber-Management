@@ -1,6 +1,6 @@
-package com.mytel.vip_subscriber_management.common.renewal.entity;
+package com.mytel.vip_subscriber_management.database.entity;
 
-import com.example.vip_management.entity.VipSubscriber;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

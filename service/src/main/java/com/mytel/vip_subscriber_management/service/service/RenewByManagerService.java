@@ -1,7 +1,9 @@
-package com.mytel.vip_subscriber_management.common.renewal.service;
+package com.mytel.vip_subscriber_management.service.service;
 
-import com.example.vip_management.renewal.dto.RenewalDto;
-import com.example.vip_management.renewal.entity.RenewByManager;
+
+
+import com.mytel.vip_subscriber_management.database.dto.RenewalDto;
+import com.mytel.vip_subscriber_management.database.entity.RenewByManager;
 
 import java.util.List;
 
