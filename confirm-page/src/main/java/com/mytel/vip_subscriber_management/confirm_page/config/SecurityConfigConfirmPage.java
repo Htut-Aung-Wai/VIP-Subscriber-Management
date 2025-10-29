@@ -1,3 +1,4 @@
+/*
 package com.mytel.vip_subscriber_management.confirm_page.config;
 
 
@@ -33,8 +34,6 @@ public class SecurityConfigConfirmPage{
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/confirm-page/auth/**").permitAll()
-                //.antMatchers("/confirm-page/expire-subscribers/**").authenticated()
-                //.anyRequest().permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -45,27 +44,7 @@ public class SecurityConfigConfirmPage{
     }
 
 
-  /*  @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .antMatcher("/confirm-page/**") // only for confirm-page routes
-                .cors()
-                .and()
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/confirm-page/auth/**").permitAll()
-                .antMatchers("/confirm-page/expire-subscribers/**").authenticated()
-                .anyRequest().permitAll()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilterBefore(jwtAuthenticationFilterConfirmPage, UsernamePasswordAuthenticationFilter.class);
-    }*/
-
-
-@Bean
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Collections.singletonList("*"));  // Use this instead of setAllowedOrigins("*")
@@ -83,3 +62,4 @@ public class SecurityConfigConfirmPage{
 
 
 
+*/
