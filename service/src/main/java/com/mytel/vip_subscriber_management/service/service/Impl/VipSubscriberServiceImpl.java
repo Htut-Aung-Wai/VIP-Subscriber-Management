@@ -6,6 +6,7 @@ import com.mytel.vip_subscriber_management.common.common.response.ResponseFactor
 import com.mytel.vip_subscriber_management.common.common.utils.Util;
 import com.mytel.vip_subscriber_management.common.constant.ErrorCode;
 import com.mytel.vip_subscriber_management.common.constant.VipSubscriberLogActionType;
+import com.mytel.vip_subscriber_management.database.dto.SubscriberSearchDto;
 import com.mytel.vip_subscriber_management.database.dto.VipSubscriberExcelImportCreateErrorDto;
 import com.mytel.vip_subscriber_management.database.dto.VipSubscriberRequest;
 import com.mytel.vip_subscriber_management.database.entity.VipSubscriber;
@@ -16,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +35,7 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -205,11 +210,23 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
 
     @Override
-    public ResponseEntity<Basic> getAllVipSubscribers() {
+    public ResponseEntity<Basic> searchVipSubscribers(SubscriberSearchDto subscriberSearchDto, int page, int size) {
         try {
-            log.info("Fetching all active Vip Subscribers...");
 
-            List<VipSubscriber> vipSubscribers = vipSubscriberRepo.findAllActive();
+            log.info("Searching active Vip Subscribers with keywords : {} and page: {}, size: {}",subscriberSearchDto, page, size);
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            LocalDateTime startDateTime = (subscriberSearchDto.getFromDate() != null) ? subscriberSearchDto.getFromDate().atStartOfDay() : null;
+            LocalDateTime endDateTime = (subscriberSearchDto.getToDate() != null) ? subscriberSearchDto.getToDate().atTime(23, 59, 59) : null;
+
+            Page<VipSubscriber> vipSubscribers = vipSubscriberRepo.findActiveSubscriberWithFilterCombined(subscriberSearchDto.getKeyword()
+                    ,subscriberSearchDto.getSubscriberNumber()
+                    ,subscriberSearchDto.getUnit()
+                    ,subscriberSearchDto.getDocumentNumber()
+                    ,startDateTime
+                    ,endDateTime
+                    ,pageable);
 
             if (vipSubscribers.isEmpty()) {
                 log.warn("No active Vip Subscribers found");
@@ -221,7 +238,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
                 );
             }
 
-            log.info("[Succeed] Fetched {} active Vip Subscribers", vipSubscribers.size());
+            log.info("[Succeed] Fetched {} active Vip Subscribers", vipSubscribers.getTotalElements());
             return responseFactory.buildSuccess(
                     HttpStatus.OK,
                     vipSubscribers,
@@ -230,12 +247,12 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
             );
 
         } catch (Exception e) {
-            log.error("[Failed] Error occurred while fetching all Vip Subscribers: {}", e.getMessage(), e);
+            log.error("[Failed] Error occurred while searching Vip Subscribers: {}", e.getMessage(), e);
             return responseFactory.buildError(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     ErrorCode.INTERNAL_ERROR,
                     ErrorCode.FAIL,
-                    "[Failed] Error occurred while fetching all Vip Subscribers"
+                    "[Failed] Error occurred while searching Vip Subscribers"
             );
         }
     }
@@ -296,7 +313,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
         vipSubscriber.setVipPackageId(vipSubscriberRequest.getVipPackageId());
         vipSubscriber.setBranchName(vipSubscriberRequest.getBranchName());
         vipSubscriber.setProposalDocumentNo(vipSubscriberRequest.getProposalDocumentNo());
-        vipSubscriber.setRegistrationDate(Timestamp.valueOf(LocalDateTime.now()));
+        vipSubscriber.setRegistrationDate(LocalDateTime.now());
         vipSubscriber.setDeleted(false);
         log.info("Saved Vip Subscriber No : {}",vipSubscriber.getSubscriberNo());
 
@@ -536,14 +553,28 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
 
     @Override
-    public ResponseEntity<?> exportData() {
+    public ResponseEntity<?> exportData(SubscriberSearchDto subscriberSearchDto,int page,int size) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         try {
             log.info("Fetching all active Vip Subscribers to export...");
 
-            List<VipSubscriber> vipSubscribers = vipSubscriberRepo.findAllActive();
+            //List<VipSubscriber> vipSubscribers = vipSubscriberRepo.findAllActive();
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            LocalDateTime startDateTime = (subscriberSearchDto.getFromDate() != null) ? subscriberSearchDto.getFromDate().atStartOfDay() : null;
+            LocalDateTime endDateTime = (subscriberSearchDto.getToDate() != null) ? subscriberSearchDto.getToDate().atTime(23, 59, 59) : null;
+
+            Page<VipSubscriber> vipSubscribers = vipSubscriberRepo.findActiveSubscriberWithFilterCombined(subscriberSearchDto.getKeyword()
+                    ,subscriberSearchDto.getSubscriberNumber()
+                    ,subscriberSearchDto.getUnit()
+                    ,subscriberSearchDto.getDocumentNumber()
+                    ,startDateTime
+                    ,endDateTime
+                    ,pageable);
 
             /*if (vipSubscribers.isEmpty()) {
                 log.warn("No active Vip Subscribers found to export");
@@ -557,7 +588,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
 
 
-            log.info("[Succeed] Fetched {} active Vip Subscribers and exporting as excel file", vipSubscribers.size());
+            log.info("[Succeed] Fetched {} active Vip Subscribers and exporting as excel file", vipSubscribers.getTotalElements());
             // Create a new workbook and sheet
             Workbook workbook = new XSSFWorkbook();
             Sheet sheet = workbook.createSheet("All VIP Subscriber");
@@ -592,12 +623,12 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
                 );
                 row.createCell(4).setCellValue(
                         subscriber.getRegistrationDate() != null
-                                ? dateFormat.format(subscriber.getRegistrationDate())
+                                ? subscriber.getRegistrationDate().format(formatter)
                                 : ""
                 );
                 row.createCell(5).setCellValue(
                         subscriber.getExpiryDate() != null
-                                ? dateFormat.format(subscriber.getExpiryDate())
+                                ? subscriber.getExpiryDate().format(formatter)
                                 : ""
                 );
             }

@@ -3,6 +3,7 @@ package com.mytel.vip_subscriber_management.caio.controller;
 
 
 import com.mytel.vip_subscriber_management.common.common.response.Basic;
+import com.mytel.vip_subscriber_management.database.dto.SubscriberSearchDto;
 import com.mytel.vip_subscriber_management.database.dto.VipSubscriberRequest;
 import com.mytel.vip_subscriber_management.service.service.VipSubscriberService;
 import lombok.extern.slf4j.Slf4j;
@@ -54,10 +55,12 @@ public class VipSubscriberController {
         return vipSubscriberService.getVipSubscriber(vipSubscriberId);
     }
 
-    @GetMapping("/get-all-vip-subscribers")
-    public ResponseEntity<Basic> getAllVipSubscribers() {
-        log.info("Received request to fetch all active Vip Subscribers");
-        return vipSubscriberService.getAllVipSubscribers();
+    @PostMapping("/search-vip-subscriber")
+    public ResponseEntity<Basic> searchVipSubscriber(@RequestBody SubscriberSearchDto subscriberSearchDto,
+                                                      @RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "10") int size) {
+        log.info("Received request to search vip subscribers");
+        return vipSubscriberService.searchVipSubscribers(subscriberSearchDto,page,size);
     }
 
 
@@ -83,10 +86,12 @@ public class VipSubscriberController {
     }
 
     @GetMapping("/export")
-    public ResponseEntity<?> exportVipSubscribers() {
+    public ResponseEntity<?> exportVipSubscribers(@RequestBody SubscriberSearchDto subscriberSearchDto,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "10") int size) {
 
         log.info("Received request to export vip subscriber through Excel");
-        return vipSubscriberService.exportData();
+        return vipSubscriberService.exportData(subscriberSearchDto,page,size);
 
     }
 

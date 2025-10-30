@@ -8,7 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -35,10 +35,10 @@ public class VipSubscriber extends BaseEntity{
     private String proposalDocumentNo;
 
     @Column(name = "REGISTRATION_DATE")
-    private Timestamp registrationDate;
+    private LocalDateTime registrationDate;
 
     @Column(name = "EXPIRY_DATE")
-    private Timestamp expiryDate;
+    private LocalDateTime expiryDate;
 
     @Column(name = "IS_DELETED")
     private boolean isDeleted;
