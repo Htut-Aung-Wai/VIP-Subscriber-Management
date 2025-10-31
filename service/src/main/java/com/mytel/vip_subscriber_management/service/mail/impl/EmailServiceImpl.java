@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.service.mail.impl;
 
-
 import com.mytel.vip_subscriber_management.service.mail.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

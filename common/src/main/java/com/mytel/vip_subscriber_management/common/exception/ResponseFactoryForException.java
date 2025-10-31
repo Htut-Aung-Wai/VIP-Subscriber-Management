@@ -1,19 +1,17 @@
 package com.mytel.vip_subscriber_management.common.exception;
 
-
-
 import com.mytel.vip_subscriber_management.common.common.response.Basic;
 import com.mytel.vip_subscriber_management.common.common.utils.I18n;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-
-
 @Component
 public class ResponseFactoryForException {
+
     public ResponseFactoryForException() { // Default constructor
     }
+
     public ResponseFactoryForException(String errInputInvalid, String message) {
     }
 

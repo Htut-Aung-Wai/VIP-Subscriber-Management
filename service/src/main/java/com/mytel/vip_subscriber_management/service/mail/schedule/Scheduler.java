@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.service.mail.schedule;
 
-
 import com.mytel.vip_subscriber_management.service.mail.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

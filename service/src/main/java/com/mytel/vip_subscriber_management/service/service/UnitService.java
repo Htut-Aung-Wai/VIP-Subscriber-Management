@@ -1,21 +1,22 @@
 package com.mytel.vip_subscriber_management.service.service;
 
-
-import com.mytel.vip_subscriber_management.database.entity.Branch;
+import com.mytel.vip_subscriber_management.database.entity.Unit;
 
 import java.util.List;
 
-public interface BranchService {
+public interface UnitService {
 
-    Branch createBranch(Branch branch);
+    Unit createUnit(Unit unit);
 
-    List<Branch> getAllBranch();
+    List<Unit> getAllUnit();
 
-    Branch getBranchById(Long id);
+    Unit getUnitById(Long id);
 
-    List<Branch> getBranchByBranchManagerName(String branchManagerName);
+    Unit getUnitByUnitName(String unitName);
 
-    Branch updateBranchByBranchCode(String branchCode, Branch updated);
+    Unit getUnitByUnitCode(String unitCode);
 
-    void deleteBranch(Long id);
+    Unit updateUnitByUnitCode(String unitCode, Unit updated);
+
+    void deleteUnit(Long id);
 }

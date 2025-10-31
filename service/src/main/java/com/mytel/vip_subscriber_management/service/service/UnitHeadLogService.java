@@ -1,23 +1,23 @@
 package com.mytel.vip_subscriber_management.service.service;
 
-
-
-import com.mytel.vip_subscriber_management.database.entity.Branch;
-import com.mytel.vip_subscriber_management.database.entity.BranchLog;
+import com.mytel.vip_subscriber_management.database.entity.UnitHead;
+import com.mytel.vip_subscriber_management.database.entity.UnitHeadLog;
 
 import java.util.List;
 
-public interface BranchLogService {
+public interface UnitHeadLogService {
 
-    void logCreated(Branch branch);
+    void logCreated(UnitHead head);
 
-    BranchLog logUpdated(Branch oldBranch, Branch newBranch);
+    void logUpdated(UnitHead newUnitHead);
 
-    void logDeleted(Branch deletedBranch);
+    void logDeleted(UnitHead deletedUnitHead);
 
-    List<BranchLog> getAllLogs();
+    List<UnitHeadLog> getAllLogs();
 
-    List<BranchLog> getLogsByBranchName(String branchName);
+    List<UnitHeadLog> getLogsByUnitName(String unitName);
 
-    List<BranchLog> getLogsByBranchNameAndAction(String branchName, String actionType);
+    List<UnitHeadLog> getLogsForOneDay(String dateString);
+
+    List<UnitHeadLog> getLogsForCustomDays(String startDateString, String endDateString);
 }

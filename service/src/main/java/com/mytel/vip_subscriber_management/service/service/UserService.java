@@ -1,7 +1,5 @@
 package com.mytel.vip_subscriber_management.service.service;
 
-
-
 import com.mytel.vip_subscriber_management.database.dto.UserDto;
 import com.mytel.vip_subscriber_management.database.entity.User;
 

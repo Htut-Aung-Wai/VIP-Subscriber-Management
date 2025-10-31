@@ -3,7 +3,6 @@ package com.mytel.vip_subscriber_management.confirm_page.controller;
 import com.mytel.vip_subscriber_management.common.common.response.ResponseFactory;
 import com.mytel.vip_subscriber_management.database.dto.RenewalDto;
 import com.mytel.vip_subscriber_management.database.entity.RenewByManager;
-import com.mytel.vip_subscriber_management.service.service.ExpiringVipSubscriberService;
 import com.mytel.vip_subscriber_management.service.service.RenewByManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,12 +17,11 @@ import java.util.List;
 public class RenewByManagerController {
 
     private final RenewByManagerService service;
-    private final ExpiringVipSubscriberService expiringVipSubscriberService;
     private final ResponseFactory factory;
 
-    @PutMapping("/renew/{branch}")
-    public ResponseEntity<?> renewalProcess(@RequestBody RenewByManager renew, @PathVariable("branch") String branch) {
-        List<RenewByManager> renewByManagers = service.renewByManager(renew, branch);
+    @PutMapping("/renew/{unit}")
+    public ResponseEntity<?> renewalProcess(@RequestBody RenewByManager renew, @PathVariable("unit") String unit) {
+        List<RenewByManager> renewByManagers = service.renewByManager(renew, unit);
 
         return factory.buildSuccess(
                 HttpStatus.CREATED,
@@ -42,5 +40,4 @@ public class RenewByManagerController {
                 "201",
                 "Partial Renewal Process Success.");
     }
-
 }

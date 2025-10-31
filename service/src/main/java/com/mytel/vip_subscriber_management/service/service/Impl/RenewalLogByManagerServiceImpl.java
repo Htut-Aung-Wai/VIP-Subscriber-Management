@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.service.service.Impl;
 
-
 import com.mytel.vip_subscriber_management.database.entity.RenewByManager;
 import com.mytel.vip_subscriber_management.database.entity.RenewByManagerLog;
 import com.mytel.vip_subscriber_management.database.repository.RenewalLogByManagerRepo;
@@ -24,8 +23,8 @@ public class RenewalLogByManagerServiceImpl implements RenewalLogByManagerServic
         log.setSubscriberNo(renewByManager.getSubscriberNo());
         log.setDecision(renewByManager.getDecision().toString());
         log.setConfirmedAt(renewByManager.getConfirmedAt());
-        log.setBranchManagerName(renewByManager.getSubscriber().getUnit().getBranchManagerName());
-        log.setBranchName(renewByManager.getSubscriber().getBranchName());
+        log.setUnitManagerName(renewByManager.getSubscriber().getUnit().getUnitHead().getUnitHeadFullName());
+        log.setUnitName(renewByManager.getSubscriber().getBranchName());
         repo.save(log);
     }
 

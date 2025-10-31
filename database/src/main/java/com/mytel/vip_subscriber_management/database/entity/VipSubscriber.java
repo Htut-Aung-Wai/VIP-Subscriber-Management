@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.database.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -44,16 +43,13 @@ public class VipSubscriber extends BaseEntity{
     private boolean isDeleted;
 
     @ManyToOne
-    @JoinColumn(name = "BRANCH_ID")
+    @JoinColumn(name = "UNIT_ID")
     @JsonIgnore
-    private Branch unit;
+    private Unit unit;
 
-    @JsonProperty("branchId")
-    public Long getBranchId() {
+    @JsonProperty("unitId")
+    public Long getUnitId() {
         return unit != null ? unit.getId() : null;
     }
-
-
-
 
 }

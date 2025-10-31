@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.service.service.Impl;
 
-
 import com.mytel.vip_subscriber_management.database.entity.VipSubscriber;
 import com.mytel.vip_subscriber_management.database.repository.VipSubscriberRepo;
 import com.mytel.vip_subscriber_management.service.service.ExpiringVipSubscriberService;
@@ -28,10 +27,6 @@ public class ExpiringVipSubscriberServiceImpl implements ExpiringVipSubscriberSe
         LocalDateTime startDate = futureStart.atStartOfDay();
         LocalDateTime endDate = futureEnd.atTime(LocalTime.MAX);
 
-        Timestamp start = Timestamp.valueOf(startDate);
-        Timestamp end = Timestamp.valueOf(endDate);
-
-        return repo.findExpiringSubscribersByBranchName(start, end, branchName);
-
+        return repo.findExpiringSubscribersByUnitName(startDate, endDate, branchName);
     }
 }

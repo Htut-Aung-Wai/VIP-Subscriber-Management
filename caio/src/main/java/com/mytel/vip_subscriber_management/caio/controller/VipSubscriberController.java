@@ -1,7 +1,5 @@
 package com.mytel.vip_subscriber_management.caio.controller;
 
-
-
 import com.mytel.vip_subscriber_management.common.common.response.Basic;
 import com.mytel.vip_subscriber_management.database.dto.SubscriberSearchDto;
 import com.mytel.vip_subscriber_management.database.dto.VipSubscriberRequest;

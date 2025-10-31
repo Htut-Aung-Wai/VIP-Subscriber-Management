@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.database.dto;
 
-
 import com.mytel.vip_subscriber_management.database.entity.RenewByManager;
 import lombok.Data;
 import lombok.NoArgsConstructor;

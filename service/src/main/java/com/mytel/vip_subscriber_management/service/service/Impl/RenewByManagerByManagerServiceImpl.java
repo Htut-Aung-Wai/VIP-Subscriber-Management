@@ -27,8 +27,8 @@ public class RenewByManagerByManagerServiceImpl implements RenewByManagerService
 
     @Override
     @Transactional
-    public List<RenewByManager> renewByManager(RenewByManager renewByManager, String branch) {
-        List<VipSubscriber> subscribers = expiringVipSubscriberService.getExpiringSubscriberFilteredByBranchName(branch);
+    public List<RenewByManager> renewByManager(RenewByManager renewByManager, String unit) {
+        List<VipSubscriber> subscribers = expiringVipSubscriberService.getExpiringSubscriberFilteredByBranchName(unit);
         List<RenewByManager> renewByManagers = new ArrayList<>();
 
         for (VipSubscriber sub : subscribers) {
@@ -36,7 +36,7 @@ public class RenewByManagerByManagerServiceImpl implements RenewByManagerService
             renewRecord.setDecision(renewByManager.getDecision());
             renewRecord.setSubscriber(sub);
             renewRecord.setSubscriberNo(sub.getSubscriberNo());
-            renewRecord.setBranchName(sub.getBranchName());
+            renewRecord.setUnitName(sub.getBranchName());
             RenewByManager saved = renewRepo.save(renewRecord);
 
             service.logCreated(saved);
@@ -57,7 +57,7 @@ public class RenewByManagerByManagerServiceImpl implements RenewByManagerService
             RenewByManager record = new RenewByManager();
             record.setSubscriber(subscriber);
             record.setSubscriberNo(subscriber.getSubscriberNo());
-            record.setBranchName(subscriber.getBranchName());
+            record.setUnitName(subscriber.getBranchName());
             record.setDecision(item.getDecision());
             RenewByManager saved = renewRepo.save(record);
 

@@ -1,10 +1,8 @@
 package com.mytel.vip_subscriber_management.common.exception;
 
-
 import com.mytel.vip_subscriber_management.common.common.utils.I18n;
 import lombok.Getter;
 import lombok.Setter;
-
 
 @Getter
 @Setter

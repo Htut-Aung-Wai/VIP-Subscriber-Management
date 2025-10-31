@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.caio.controller;
 
-
 import com.mytel.vip_subscriber_management.common.common.response.ResponseFactory;
 import com.mytel.vip_subscriber_management.database.entity.VipPackage;
 import com.mytel.vip_subscriber_management.service.service.VipPackageService;
@@ -49,7 +48,7 @@ public class VipPackagesController {
                 HttpStatus.OK,
                 updated,
                 "200",
-                "VIP Package Updated.");
+                "VIP Package Id " + id + " Updated.");
     }
 
     @DeleteMapping("/delete/{id}")
@@ -60,6 +59,6 @@ public class VipPackagesController {
                 HttpStatus.OK,
                 null,
                 "200",
-                "VIP Package Deleted.");
+                "VIP Package Id " + id + " Deleted.");
     }
 }

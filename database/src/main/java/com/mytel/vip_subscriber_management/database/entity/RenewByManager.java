@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.database.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -28,12 +27,12 @@ public class RenewByManager {
     @Column(name = "DECISION")
     private Decision decision;
 
-    @Column(name = "BRANCH")
-    private String branchName;
+    @Column(name = "UNIT")
+    private String unitName;
 
     @Column(name = "CONFIRMED_AT")
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Rangoon")
-    private Timestamp confirmedAt;
+    private LocalDateTime confirmedAt;
 
     public enum Decision {
         WILL_RENEW, NOT_RENEW
@@ -41,12 +40,12 @@ public class RenewByManager {
 
     @PrePersist
     public void onCreate() {
-        confirmedAt = new Timestamp(System.currentTimeMillis());
+        confirmedAt = LocalDateTime.now();
     }
 
     @PreUpdate
     public void onUpdate() {
-        confirmedAt = new Timestamp(System.currentTimeMillis());
+        confirmedAt = LocalDateTime.now();
     }
 
     @ManyToOne

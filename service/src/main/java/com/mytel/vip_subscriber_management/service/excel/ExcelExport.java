@@ -1,7 +1,4 @@
-
-
 package com.mytel.vip_subscriber_management.service.excel;
-
 
 import com.mytel.vip_subscriber_management.database.entity.VipSubscriber;
 import org.apache.poi.ss.usermodel.*;
@@ -17,7 +14,7 @@ import java.util.List;
 public class ExcelExport {
 
     public static ByteArrayInputStream exportToExcel(List<VipSubscriber> subscribers) throws IOException {
-        String[] columns = {"ID", "SUBSCRIBER NO", "VIP PACKAGE ID", "Branch", "PROPOSAL DOCUMENT NO", "REGISTRATION DATE", "EXPIRY DATE", "IS DELETED"};
+        String[] columns = {"ID", "SUBSCRIBER NO", "VIP PACKAGE ID", "UNIT", "PROPOSAL DOCUMENT NO", "REGISTRATION DATE", "EXPIRY DATE", "IS DELETED"};
 
         try (
                 Workbook workbook = new XSSFWorkbook();

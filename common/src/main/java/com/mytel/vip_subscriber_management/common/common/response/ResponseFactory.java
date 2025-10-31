@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.common.common.response;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;

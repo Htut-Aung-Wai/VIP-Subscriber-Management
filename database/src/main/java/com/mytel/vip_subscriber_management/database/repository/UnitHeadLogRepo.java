@@ -1,15 +1,15 @@
 package com.mytel.vip_subscriber_management.database.repository;
 
-
-import com.mytel.vip_subscriber_management.database.entity.BranchLog;
+import com.mytel.vip_subscriber_management.database.entity.UnitHeadLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-public interface BranchLogRepo extends JpaRepository<BranchLog, Long> {
+public interface UnitHeadLogRepo extends JpaRepository<UnitHeadLog, Long> {
 
-    List<BranchLog> findByBranchName(String branchName);
+    List<UnitHeadLog> findByUnitName(String unitName);
 
-    List<BranchLog> findByBranchNameAndAction(String branchName, String actionType);
+    List<UnitHeadLog> findByLastUpdatedAtBetween(LocalDateTime start, LocalDateTime end);
 
 }

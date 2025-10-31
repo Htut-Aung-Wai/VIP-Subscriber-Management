@@ -1,58 +1,68 @@
 package com.mytel.vip_subscriber_management.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@Table(name = "CAIO_VIP_BRANCH")
-public class Branch {
+@ToString(exclude = "unitHead")
+@Table(name = "CAIO_VIP_UNIT")
+public class Unit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "BRANCH_CODE", updatable = false)
-    private String branchCode;
+    @Column(name = "UNIT_CODE", updatable = false, nullable = false)
+    @NotBlank(message = "Unit Code Required!")
+    private String unitCode;
 
-    @Column(name = "BRANCH_NAME")
-    private String branchName;
+    @Column(name = "BRANCH_NAME", nullable = false)
+    @NotBlank(message = "Unit Name Required!")
+    private String unitName;
 
-    @Column(name = "BRANCH_MANAGER_NAME")
-    private String branchManagerName;
-
-    @Column(name = "EMAIL")
-    private String email;
-
-    @Column(name = "PHONE_NUMBER")
-    private String phoneNumber;
-
-    @Column(name = "REMARK", length = 1000)
-    private String remark;
+    @Column(name = "IS_ACTIVE")
+    private Boolean isActive = true;
 
     @Column(name = "CREATED_AT", updatable = false)
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Rangoon")
-    private Timestamp createdAt;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Yangon")
+    private LocalDateTime createdAt;
 
     @Column(name = "LAST_UPDATED_AT")
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Rangoon")
-    private Timestamp lastUpdatedAt;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Yangon")
+    private LocalDateTime lastUpdatedAt;
+
+
+    @OneToOne(mappedBy = "unit", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @JsonBackReference
+    private UnitHead unitHead;
+
 
     @PrePersist
     public void onCreate() {
-        createdAt = Timestamp.valueOf(LocalDateTime.now());
+        createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
     public void onUpdate() {
-        lastUpdatedAt = Timestamp.valueOf(LocalDateTime.now());
+        lastUpdatedAt = LocalDateTime.now();
     }
 
+    public void setUnitHead(UnitHead unitHead) {
+        this.unitHead = unitHead;
+        if (unitHead != null && unitHead.getUnit() == null) {
+            unitHead.setUnit(this);
+        }
+    }
 }

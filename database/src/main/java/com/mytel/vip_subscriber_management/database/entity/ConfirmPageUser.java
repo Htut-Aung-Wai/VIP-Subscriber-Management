@@ -26,5 +26,4 @@ public class ConfirmPageUser {
     private String vmyCode;
     private String role;
 
-
 }

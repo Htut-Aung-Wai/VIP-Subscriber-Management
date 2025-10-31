@@ -1,8 +1,5 @@
 package com.mytel.vip_subscriber_management.common.exception;
 
-
-
-
 import com.mytel.vip_subscriber_management.common.constant.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +49,5 @@ public class HandleException extends ResponseEntityExceptionHandler {
         log.error("Error: ", e);
         return responseFactory.badRequest(ErrorCode.HAVE_SOME_PROBLEM, e.getMessage());
     }
-
 
 }

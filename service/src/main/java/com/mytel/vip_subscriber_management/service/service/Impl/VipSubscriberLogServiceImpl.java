@@ -83,7 +83,7 @@ public class VipSubscriberLogServiceImpl implements VipSubscriberLogService {
     }
 
     @Override
-    public void errorlog(String subscriberId,String subscriberNo,String actionType,String errorDescription)
+    public void errorLog(String subscriberId, String subscriberNo, String actionType, String errorDescription)
     {
         VipSubscriberLog vipSubscriberLog=new VipSubscriberLog();
 

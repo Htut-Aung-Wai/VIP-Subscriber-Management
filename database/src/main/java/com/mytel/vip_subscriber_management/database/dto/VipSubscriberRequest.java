@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.database.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -21,7 +20,5 @@ public class VipSubscriberRequest {
 
     @NotBlank(message = "Proposal Document No is required")
     private String proposalDocumentNo;
-
-
 
 }

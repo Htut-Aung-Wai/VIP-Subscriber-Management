@@ -1,20 +1,17 @@
 package com.mytel.vip_subscriber_management.database.repository;
 
-
-import com.mytel.vip_subscriber_management.database.entity.Branch;
+import com.mytel.vip_subscriber_management.database.entity.Unit;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface BranchRepo extends JpaRepository<Branch, Long> {
+public interface UnitRepo extends JpaRepository<Unit, Long> {
 
-    List<Branch> findByBranchName(String branchName);
+    Optional<Unit> findByUnitName(String unitName);
 
-    List<Branch> findByBranchManagerName(String branchManagerName);
+    Optional<Unit> findByUnitCode(String unitCode);
 
-    Optional<Branch> findByBranchCode(String branchCode);
+    boolean existsByUnitCode(String unitCode);
 
-    boolean existsByBranchCode(String branchCode);
-
+    boolean existsByUnitName(String unitName);
 }

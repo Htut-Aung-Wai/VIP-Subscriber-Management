@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.confirm_page.controller;
 
-
 import com.mytel.vip_subscriber_management.common.common.response.Basic;
 import com.mytel.vip_subscriber_management.common.common.response.ResponseFactory;
 import com.mytel.vip_subscriber_management.common.constant.ErrorCode;
@@ -36,9 +35,9 @@ public class ExpiringVipSubscriberController {
     /**
      * For Confirm Page
      */
-    @GetMapping("/{branch}")
-    public ResponseEntity<?> getExpiringSubscribersByBranchName(@PathVariable("branch") String branch) {
-        List<VipSubscriber> subscribers = service.getExpiringSubscriberFilteredByBranchName(branch);
+    @GetMapping("/{branchName}")
+    public ResponseEntity<?> getExpiringSubscribersByUnitName(@PathVariable("branchName") String branchName) {
+        List<VipSubscriber> subscribers = service.getExpiringSubscriberFilteredByBranchName(branchName);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
@@ -47,13 +46,13 @@ public class ExpiringVipSubscriberController {
                 "Expiring Subscribers at next 2-Month.");
     }
 
-    @GetMapping("/export/{branch}")
-    public ResponseEntity<Resource> exportExpiringSubscribersXlsx(@PathVariable("branch") String branch) throws IOException {
-        List<VipSubscriber> expiring = service.getExpiringSubscriberFilteredByBranchName(branch);
+    @GetMapping("/export/{branchName}")
+    public ResponseEntity<Resource> exportExpiringSubscribersXlsx(@PathVariable("branchName") String branchName) throws IOException {
+        List<VipSubscriber> expiring = service.getExpiringSubscriberFilteredByBranchName(branchName);
         ByteArrayInputStream in = ExcelExport.exportToExcel(expiring);
 
         InputStreamResource file = new InputStreamResource(in);
-        log.info("Expiring count for {} => {}", branch, expiring.size());
+        log.info("Expiring count for {} => {}", branchName, expiring.size());
         expiring.forEach(s -> log.info("expiring: {} -> {}", s.getSubscriberNo(), s.getExpiryDate()));
 
         return ResponseEntity.ok()
@@ -65,13 +64,11 @@ public class ExpiringVipSubscriberController {
     @GetMapping("/test")
     public ResponseEntity<Basic> testSecurity() {
 
-
         return factory.buildSuccess(
                 HttpStatus.OK,
-                "Secuity test succeed",
+                "Security test succeed",
                 ErrorCode.SUCCESS,
                 "[Succeed]"
         );
     }
-
 }

@@ -32,12 +32,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
 
 @Service
 @Slf4j
@@ -88,7 +86,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
         catch (DataIntegrityViolationException e) {
             log.error("[Failed] Duplicate Subscriber number.Subscriber already existed : {}", vipSubscriberRequest.getSubscriberNo());
-            vipSubscriberLogService.errorlog(null,vipSubscriberRequest.getSubscriberNo(),
+            vipSubscriberLogService.errorLog(null,vipSubscriberRequest.getSubscriberNo(),
                     VipSubscriberLogActionType.CREATE.name(),
                     "Duplicate Subscriber number.Subscriber already existed");
             return responseFactory.buildError(
@@ -101,7 +99,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
         catch (Exception e) {
             log.error("[Failed] Error occurred while creating Vip Subscriber: {}", e.getMessage(), e);
-            vipSubscriberLogService.errorlog(null,vipSubscriberRequest.getSubscriberNo(),
+            vipSubscriberLogService.errorLog(null,vipSubscriberRequest.getSubscriberNo(),
                     VipSubscriberLogActionType.CREATE.name(),
                     e.getMessage());
             return responseFactory.buildError(
@@ -153,7 +151,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
         } catch (Exception e) {
             log.error("[Failed] Error occurred while updating Vip Subscriber: {}", e.getMessage(), e);
-            vipSubscriberLogService.errorlog(vipSubscriberId,vipSubscriberRequest.getSubscriberNo(),
+            vipSubscriberLogService.errorLog(vipSubscriberId,vipSubscriberRequest.getSubscriberNo(),
                     VipSubscriberLogActionType.UPDATE.name(),
                     e.getMessage());
             return responseFactory.buildError(
@@ -292,7 +290,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
         } catch (Exception e) {
             log.error("[Failed] Error occurred while soft deleting Vip Subscriber: {}", e.getMessage(), e);
-            vipSubscriberLogService.errorlog(vipSubscriberId,null,
+            vipSubscriberLogService.errorLog(vipSubscriberId,null,
                     VipSubscriberLogActionType.DELETE.name(),
                     e.getMessage());
             return responseFactory.buildError(
@@ -488,7 +486,7 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
             }
         } catch (Exception ex) {
             log.error("[saveBatch] error ", ex);
-            vipSubscriberLogService.errorlog(null,null,VipSubscriberLogActionType.CREATE.name(),ex.getMessage());
+            vipSubscriberLogService.errorLog(null,null,VipSubscriberLogActionType.CREATE.name(),ex.getMessage());
             throw new RuntimeException();
         }
     }

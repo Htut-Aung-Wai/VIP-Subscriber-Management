@@ -1,106 +1,73 @@
 package com.mytel.vip_subscriber_management.service.service.Impl;
 
-
 import com.mytel.vip_subscriber_management.common.exception.CommonException;
-import com.mytel.vip_subscriber_management.database.entity.Branch;
-import com.mytel.vip_subscriber_management.database.entity.BranchLog;
-import com.mytel.vip_subscriber_management.database.repository.BranchRepo;
-import com.mytel.vip_subscriber_management.service.service.BranchLogService;
-import com.mytel.vip_subscriber_management.service.service.BranchService;
+import com.mytel.vip_subscriber_management.database.entity.Unit;
+import com.mytel.vip_subscriber_management.database.repository.UnitRepo;
+import com.mytel.vip_subscriber_management.service.service.UnitService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Service
 @RequiredArgsConstructor
-public class BranchServiceImpl implements BranchService {
+public class UnitServiceImpl implements UnitService {
 
-    private final BranchRepo repo;
-    private final BranchLogService service;
+    private final UnitRepo repo;
 
     @Override
-    public Branch createBranch(Branch branch) {
-        if (repo.existsByBranchCode(branch.getBranchCode())) {
-            throw new CommonException("Branch Code " + branch.getBranchCode() + " Already Exist! Please Change.");
+    @Transactional
+    public Unit createUnit(Unit unit) {
+        if (repo.existsByUnitCode(unit.getUnitCode())) {
+            throw new CommonException("Unit Code " + unit.getUnitCode() + " Already Exist! Please Change.");
         }
-        LocalDateTime now = LocalDateTime.now();
-        branch.setCreatedAt(Timestamp.valueOf(now));
-        branch.setLastUpdatedAt(Timestamp.valueOf(now));
-        Branch saved = repo.save(branch);
-        service.logCreated(saved);
-        return saved;
+        if (repo.existsByUnitName(unit.getUnitName())) {
+            throw new CommonException("Unit Name " + unit.getUnitName() + " Already Exist! Please Change.");
+        }
+        return repo.save(unit);
     }
 
     @Override
-    public List<Branch> getAllBranch() {
+    public List<Unit> getAllUnit() {
         return repo.findAll();
     }
 
     @Override
-    public Branch getBranchById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new CommonException("ERR_404", "Branch with ID " + id + " not found."));
+    public Unit getUnitById(Long id) {
+        return repo.findById(id).orElseThrow(() -> new CommonException("ERR_404", "Unit With ID " + id + " Not Found."));
     }
 
     @Override
-    public List<Branch> getBranchByBranchManagerName(String branchManagerName) {
-        List<Branch> results = repo.findByBranchManagerName(branchManagerName);
-        if (results.isEmpty()) {
-            throw new CommonException("Branch not found for: " + branchManagerName);
-        }
-        return results;
+    public Unit getUnitByUnitName(String unitName) {
+        return repo.findByUnitName(unitName).orElseThrow(() -> new CommonException("ERR_404", "Unit " + unitName + " Not Found."));
     }
 
     @Override
-    public Branch updateBranchByBranchCode(String branchCode, Branch updated) {
-        Branch existingBranch = repo.findByBranchCode(branchCode)
-                .orElseThrow(() -> new CommonException("ERR_404", "Branch with name " + branchCode + " not found."));
-
-        Branch oldBranch = new Branch();
-        BeanUtils.copyProperties(existingBranch, oldBranch);
-
-        updated.setBranchCode(existingBranch.getBranchCode());
-
-        if (isValid(updated.getBranchName())) {
-            existingBranch.setBranchName(updated.getBranchName());
-        }
-        if (isValid(updated.getBranchManagerName())) {
-            existingBranch.setBranchManagerName(updated.getBranchManagerName());
-        }
-        if (isValid(updated.getEmail())) {
-            existingBranch.setEmail(updated.getEmail());
-        }
-        if (isValid(updated.getPhoneNumber())) {
-            existingBranch.setPhoneNumber(updated.getPhoneNumber());
-        }
-        if (isValid(updated.getRemark())) {
-            existingBranch.setRemark(updated.getRemark());
-        }
-        Branch saved = repo.save(existingBranch);
-        BranchLog log = service.logUpdated(oldBranch, saved);
-        if (log != null && log.getLastUpdatedAt() != null) {
-            saved.setLastUpdatedAt(log.getLastUpdatedAt());
-        } else {
-            saved.setLastUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        }
-
-        return repo.save(saved);
+    public Unit getUnitByUnitCode(String unitCode) {
+        return repo.findByUnitCode(unitCode).orElseThrow(() -> new CommonException("ERR_404", "Unit Code " + unitCode + " Not Found."));
     }
 
     @Override
-    public void deleteBranch(Long id) {
-        Branch existing = repo.findById(id)
-                .orElseThrow(() -> new CommonException("ERR_404",
-                        "Branch with ID " + id + " not found."));
+    @Transactional
+    public Unit updateUnitByUnitCode(String unitCode, Unit updated) {
+        Unit existingUnit = repo.findByUnitCode(unitCode).orElseThrow(() -> new CommonException("ERR_404", "Unit Code " + unitCode + " Not Found."));
+
+        updated.setUnitCode(existingUnit.getUnitCode());
+
+        if (!isBlank(updated.getUnitName())) {
+            existingUnit.setUnitName(updated.getUnitName());
+        }
+        existingUnit.setIsActive(updated.getIsActive());
+
+        return repo.save(existingUnit);
+    }
+
+    @Override
+    public void deleteUnit(Long id) {
+        Unit existing = repo.findById(id).orElseThrow(() -> new CommonException("ERR_404", "Unit with ID " + id + " not found."));
         repo.delete(existing);
-        service.logDeleted(existing);
-    }
-
-    private boolean isValid(String field) {
-        return field != null && !field.trim().isEmpty();
     }
 }

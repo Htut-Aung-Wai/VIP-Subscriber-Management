@@ -1,136 +1,159 @@
 package com.mytel.vip_subscriber_management.service.service.Impl;
 
-
-import com.mytel.vip_subscriber_management.database.entity.Branch;
-import com.mytel.vip_subscriber_management.database.entity.BranchLog;
-import com.mytel.vip_subscriber_management.database.repository.BranchLogRepo;
-import com.mytel.vip_subscriber_management.service.service.BranchLogService;
+import com.mytel.vip_subscriber_management.database.entity.UnitHead;
+import com.mytel.vip_subscriber_management.database.entity.UnitHeadLog;
+import com.mytel.vip_subscriber_management.database.repository.UnitHeadLogRepo;
+import com.mytel.vip_subscriber_management.service.service.UnitHeadLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class BranchLogServiceImpl implements BranchLogService {
+public class UnitHeadLogServiceImpl implements UnitHeadLogService {
 
-    private final BranchLogRepo repo;
+    private final UnitHeadLogRepo repo;
+    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_DATE;
 
     @Override
-    public void logCreated(Branch branch) {
-        BranchLog log = new BranchLog();
-        log.setAction("CREATED");
-        log.setBranchCode(branch.getBranchCode());
-        log.setBranchName(branch.getBranchName());
-        log.setBranchManagerName(branch.getBranchManagerName());
-        log.setEmail(branch.getEmail());
-        log.setPhoneNumber(branch.getPhoneNumber());
-        log.setRemark(branch.getRemark());
+    public void logCreated(UnitHead head) {
+        UnitHeadLog log = new UnitHeadLog();
+        log.setUnitCode(head.getUnit().getUnitCode());
+        log.setUnitName(head.getUnit().getUnitName());
+        log.setUnitHeadFullName(head.getUnitHeadFullName());
+        log.setVmyCode(head.getVmyCode());
+        log.setEmail(head.getEmail());
+        log.setPhoneNumber(head.getPhoneNumber());
+        /* createdBy */
+        log.setRemark(head.getRemark());
 
-        List<String> fieldValues = new ArrayList<>();
-        if (branch.getBranchName() != null) fieldValues.add(branch.getBranchName());
-        if (branch.getBranchManagerName() != null) fieldValues.add(branch.getBranchManagerName());
-        if (branch.getEmail() != null) fieldValues.add(branch.getEmail());
-        if (branch.getPhoneNumber() != null) fieldValues.add(branch.getPhoneNumber());
-        if (branch.getRemark() != null) {
-            fieldValues.add(branch.getRemark());
-        } else {
-            fieldValues.add(null);
-        }
-
-        String originalData = String.join(", ", fieldValues);
-
-        log.setOriginalFields(originalData.trim());
-        log.setUpdatedFields(null);
+//        List<String> fieldValues = new ArrayList<>();
+//        if (unit.getUnitName() != null) fieldValues.add(unit.getUnitName());
+//        if (unit.getBranchManagerName() != null) fieldValues.add(unit.getBranchManagerName());
+//        if (unit.getEmail() != null) fieldValues.add(unit.getEmail());
+//        if (unit.getPhoneNumber() != null) fieldValues.add(unit.getPhoneNumber());
+//        if (unit.getRemark() != null) {
+//            fieldValues.add(unit.getRemark());
+//        } else {
+//            fieldValues.add(null);
+//        }
+//
+//        String originalData = String.join(", ", fieldValues);
+//
+//        log.setOriginalFields(originalData.trim());
+//        log.setUpdatedFields(null);
 
         repo.save(log);
     }
 
     @Override
-    public BranchLog logUpdated(Branch oldBranch, Branch newBranch) {
-        BranchLog log = new BranchLog();
-        log.setAction("UPDATED");
-        log.setBranchCode(newBranch.getBranchCode());
-        log.setBranchName(newBranch.getBranchName());
-        log.setBranchManagerName(newBranch.getBranchManagerName());
-        log.setEmail(newBranch.getEmail());
-        log.setPhoneNumber(newBranch.getPhoneNumber());
-        log.setRemark(newBranch.getRemark());
+    public void logUpdated(UnitHead newUnitHead) {
+        UnitHeadLog log = new UnitHeadLog();
+        log.setUnitCode(newUnitHead.getUnit().getUnitCode());
+        log.setUnitName(newUnitHead.getUnit().getUnitName());
+        log.setUnitHeadFullName(newUnitHead.getUnitHeadFullName());
+        log.setVmyCode(newUnitHead.getVmyCode());
+        log.setEmail(newUnitHead.getEmail());
+        log.setPhoneNumber(newUnitHead.getPhoneNumber());
+        /* createdBy */
+        log.setRemark(newUnitHead.getRemark());
 
-        List<String> fieldNames = new ArrayList<>();
-        List<String> originalValues = new ArrayList<>();
-        List<String> changedValues = new ArrayList<>();
+//        List<String> fieldNames = new ArrayList<>();
+//        List<String> originalValues = new ArrayList<>();
+//        List<String> changedValues = new ArrayList<>();
+//
+//        if (!Objects.equals(oldUnit.getUnitName(), newUnit.getUnitName())) {
+//            fieldNames.add("branchName");
+//            originalValues.add(String.valueOf(oldUnit.getUnitName()));
+//            changedValues.add(String.valueOf(newUnit.getUnitName()));
+//        }
+//
+//        if (!Objects.equals(oldUnit.getBranchManagerName(), newUnit.getBranchManagerName())) {
+//            fieldNames.add("branchManagerName");
+//            originalValues.add(String.valueOf(oldUnit.getBranchManagerName()));
+//            changedValues.add(String.valueOf(newUnit.getBranchManagerName()));
+//        }
+//
+//        if (!Objects.equals(oldUnit.getEmail(), newUnit.getEmail())) {
+//            fieldNames.add("email");
+//            originalValues.add(String.valueOf(oldUnit.getEmail()));
+//            changedValues.add(String.valueOf(newUnit.getEmail()));
+//        }
+//
+//        if (!Objects.equals(oldUnit.getPhoneNumber(), newUnit.getPhoneNumber())) {
+//            fieldNames.add("phoneNumber");
+//            originalValues.add(String.valueOf(oldUnit.getPhoneNumber()));
+//            changedValues.add(String.valueOf(newUnit.getPhoneNumber()));
+//        }
+//
+//        if (!Objects.equals(oldUnit.getRemark(), newUnit.getRemark())) {
+//            fieldNames.add("remark");
+//            originalValues.add(String.valueOf(oldUnit.getRemark()));
+//            changedValues.add(String.valueOf(newUnit.getRemark()));
+//        }
+//
+//        if (fieldNames.isEmpty()) {
+//            return null;
+//        }
+//        log.setOriginalFields(String.join(", ", originalValues));
+//        log.setUpdatedFields(String.join(", ", changedValues));
 
-        if (!Objects.equals(oldBranch.getBranchName(), newBranch.getBranchName())) {
-            fieldNames.add("branchName");
-            originalValues.add(String.valueOf(oldBranch.getBranchName()));
-            changedValues.add(String.valueOf(newBranch.getBranchName()));
-        }
-
-        if (!Objects.equals(oldBranch.getBranchManagerName(), newBranch.getBranchManagerName())) {
-            fieldNames.add("branchManagerName");
-            originalValues.add(String.valueOf(oldBranch.getBranchManagerName()));
-            changedValues.add(String.valueOf(newBranch.getBranchManagerName()));
-        }
-
-        if (!Objects.equals(oldBranch.getEmail(), newBranch.getEmail())) {
-            fieldNames.add("email");
-            originalValues.add(String.valueOf(oldBranch.getEmail()));
-            changedValues.add(String.valueOf(newBranch.getEmail()));
-        }
-
-        if (!Objects.equals(oldBranch.getPhoneNumber(), newBranch.getPhoneNumber())) {
-            fieldNames.add("phoneNumber");
-            originalValues.add(String.valueOf(oldBranch.getPhoneNumber()));
-            changedValues.add(String.valueOf(newBranch.getPhoneNumber()));
-        }
-
-        if (!Objects.equals(oldBranch.getRemark(), newBranch.getRemark())) {
-            fieldNames.add("remark");
-            originalValues.add(String.valueOf(oldBranch.getRemark()));
-            changedValues.add(String.valueOf(newBranch.getRemark()));
-        }
-
-        if (fieldNames.isEmpty()) {
-            return null;
-        }
-        log.setOriginalFields(String.join(", ", originalValues));
-        log.setUpdatedFields(String.join(", ", changedValues));
-
-        return repo.save(log);
-    }
-
-    @Override
-    public void logDeleted(Branch deletedBranch) {
-        BranchLog log = new BranchLog();
-        log.setAction("DELETED");
-        log.setBranchCode(deletedBranch.getBranchCode());
-        log.setBranchName(deletedBranch.getBranchName());
-        log.setBranchManagerName(deletedBranch.getBranchManagerName());
-        log.setEmail(deletedBranch.getEmail());
-        log.setPhoneNumber(deletedBranch.getPhoneNumber());
-        log.setRemark((deletedBranch.getRemark()));
-
-        log.setOriginalFields("Branch " + deletedBranch.getBranchManagerName() + " deleted.");
-        log.setUpdatedFields("Branch " + deletedBranch.getBranchManagerName() + " deleted.");
         repo.save(log);
     }
 
     @Override
-    public List<BranchLog> getAllLogs() {
+    public void logDeleted(UnitHead deletedUnitHead) {
+        UnitHeadLog log = new UnitHeadLog();
+        log.setUnitCode(deletedUnitHead.getUnit().getUnitCode());
+        log.setUnitName(deletedUnitHead.getUnit().getUnitName());
+        log.setUnitHeadFullName(deletedUnitHead.getUnitHeadFullName());
+        log.setVmyCode(deletedUnitHead.getVmyCode());
+        log.setEmail(deletedUnitHead.getEmail());
+        log.setPhoneNumber(deletedUnitHead.getPhoneNumber());
+        /* createdBy */
+        log.setRemark((deletedUnitHead.getRemark()));
+
+//        log.setOriginalFields("Branch " + deletedUnit.getBranchManagerName() + " deleted.");
+//        log.setUpdatedFields("Branch " + deletedUnit.getBranchManagerName() + " deleted.");
+
+        repo.save(log);
+    }
+
+    @Override
+    public List<UnitHeadLog> getAllLogs() {
         return repo.findAll();
     }
 
     @Override
-    public List<BranchLog> getLogsByBranchName(String branchName) {
-        return repo.findByBranchName(branchName);
+    public List<UnitHeadLog> getLogsByUnitName(String unitName) {
+        return repo.findByUnitName(unitName);
     }
 
     @Override
-    public List<BranchLog> getLogsByBranchNameAndAction(String branchName, String actionType) {
-        return repo.findByBranchNameAndAction(branchName, actionType);
+    public List<UnitHeadLog> getLogsForOneDay(String dateString) {
+
+        LocalDate date = LocalDate.parse(dateString, DATE_FORMATTER);
+
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.plusDays(1).atStartOfDay();
+
+        return repo.findByLastUpdatedAtBetween(start, end);
+    }
+
+    @Override
+    public List<UnitHeadLog> getLogsForCustomDays(String startDateString, String endDateString) {
+
+        LocalDate startDate = LocalDate.parse(startDateString, DATE_FORMATTER);
+        LocalDate endDate = LocalDate.parse(endDateString, DATE_FORMATTER);
+
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+
+        return repo.findByLastUpdatedAtBetween(start, end);
     }
 
 }

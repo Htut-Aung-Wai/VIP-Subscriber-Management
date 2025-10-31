@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.database.repository;
 
-
 import com.mytel.vip_subscriber_management.database.entity.VipSubscriber;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +23,9 @@ public interface VipSubscriberRepo extends JpaRepository<VipSubscriber, String> 
      * For Expiring Subscribers In Month N+2
      */
     @Query("SELECT s FROM VipSubscriber s WHERE s.expiryDate BETWEEN :start AND :end AND s.branchName = :branchName")
-    List<VipSubscriber> findExpiringSubscribersByBranchName(@Param("start") Timestamp start,
-                                                            @Param("end") Timestamp end,
-                                                            @Param("branchName") String branchName);
+    List<VipSubscriber> findExpiringSubscribersByUnitName(@Param("start") LocalDateTime start,
+                                                          @Param("end") LocalDateTime end,
+                                                          @Param("branchName") String branchName);
 
     @Query("SELECT v.subscriberNo FROM VipSubscriber v WHERE v.isDeleted = false")
     List<String> findAllSubscriberNumbers();
@@ -59,10 +56,4 @@ public interface VipSubscriberRepo extends JpaRepository<VipSubscriber, String> 
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable
     );
-
-
-
-
-
-
 }

@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.common.constant;
 
-
 public class ErrorCode {
     public static final String HAVE_SOME_PROBLEM = "HAVE_SOME_PROBLEM";
     public static final String SUCCESS = "SUCCESS";

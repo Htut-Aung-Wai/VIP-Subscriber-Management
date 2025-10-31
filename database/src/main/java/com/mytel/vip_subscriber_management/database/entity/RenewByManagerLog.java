@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -26,18 +26,18 @@ public class RenewByManagerLog {
 
     @Column(name = "CONFIRMED_AT")
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Rangoon")
-    private Timestamp confirmedAt;
+    private LocalDateTime confirmedAt;
 
-    @Column(name = "BRANCH_MANAGER_NAME")
-    private String branchManagerName;
+    @Column(name = "UNIT_MANAGER_NAME")
+    private String unitManagerName;
 
-    @Column(name = "BRANCH_NAME")
-    private String branchName;
+    @Column(name = "UNIT_NAME")
+    private String unitName;
 
     @PreUpdate
     public void onUpdate() {
         if (confirmedAt != null) {
-            confirmedAt = new Timestamp(System.currentTimeMillis());
+            confirmedAt = LocalDateTime.now();
         }
     }
 

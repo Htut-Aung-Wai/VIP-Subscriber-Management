@@ -1,7 +1,5 @@
 package com.mytel.vip_subscriber_management.confirm_page.controller;
 
-
-
 import com.mytel.vip_subscriber_management.common.common.response.Basic;
 import com.mytel.vip_subscriber_management.common.common.response.ResponseFactory;
 import com.mytel.vip_subscriber_management.common.constant.ErrorCode;

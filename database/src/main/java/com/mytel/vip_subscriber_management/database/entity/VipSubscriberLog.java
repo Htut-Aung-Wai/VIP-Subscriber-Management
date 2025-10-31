@@ -1,6 +1,5 @@
 package com.mytel.vip_subscriber_management.database.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,7 +52,5 @@ public class VipSubscriberLog{
 
     @Column(name ="DESCRIPTION")
     private String description;
-
-
 
 }
