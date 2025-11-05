@@ -3,6 +3,7 @@ package com.mytel.vip_subscriber_management.caio.controller;
 import com.mytel.vip_subscriber_management.common.common.response.Basic;
 import com.mytel.vip_subscriber_management.database.dto.SubscriberSearchDto;
 import com.mytel.vip_subscriber_management.database.dto.VipSubscriberRequest;
+import com.mytel.vip_subscriber_management.database.entity.VipSubscriber;
 import com.mytel.vip_subscriber_management.service.service.VipSubscriberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -69,10 +71,16 @@ public class VipSubscriberController {
     }
 
 
-    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> importData(@RequestParam("file") MultipartFile file) {
-        log.info("Received imported request to create vip subscriber through File");
-        return vipSubscriberService.importData(file);
+    @PostMapping(value = "/import-validate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> validateImport(@RequestParam("file") MultipartFile file) {
+        log.info("Received import valid request to create vip subscriber through File");
+        return vipSubscriberService.validateImportSubscriber(file);
+    }
+
+    @PostMapping("/import-confirm")
+    public ResponseEntity<?> confirmImport(@RequestBody String token) {
+        log.info("Received confirmed request to create vip subscriber through File");
+        return vipSubscriberService.saveValidatedList(token);
     }
 
     @GetMapping("/download-template")
