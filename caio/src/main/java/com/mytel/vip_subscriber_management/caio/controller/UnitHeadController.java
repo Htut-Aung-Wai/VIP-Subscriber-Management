@@ -92,4 +92,64 @@ public class UnitHeadController {
                 unitCode + " Unit Head Deleted."
         );
     }
+
+    @GetMapping("/unit-code-or-name/{keyword}")
+    public ResponseEntity<?> getByUnitCodeOrUnitName(@PathVariable("keyword") String keyword) {
+        List<UnitHead> unitHead = service.findByUnitCodeOrUnitName(keyword);
+
+        return factory.buildSuccess(
+                HttpStatus.OK,
+                unitHead,
+                "200",
+                "Unit Head " + keyword + " Retrieved."
+        );
+    }
+
+    @GetMapping("/phone-number/{phoneNumber}")
+    public ResponseEntity<?> getByPhoneNumber(@PathVariable("phoneNumber") String phoneNumber) {
+        List<UnitHead> unitHead = service.findByPhoneNumber(phoneNumber);
+
+        return factory.buildSuccess(
+                HttpStatus.OK,
+                unitHead,
+                "200",
+                "Unit Head With " + phoneNumber + " Retrieved."
+        );
+    }
+
+    @GetMapping("/vmy-code/{vmyCode}")
+    public ResponseEntity<?> getByVmyCode(@PathVariable("vmyCode") String vmyCode) {
+        List<UnitHead> unitHead = service.findByVmyCode(vmyCode);
+
+        return factory.buildSuccess(
+                HttpStatus.OK,
+                unitHead,
+                "200",
+                "Unit Head With " + vmyCode + " Retrieved."
+        );
+    }
+
+    //    /one-day?date=2000-02-20                                 for From Date
+    @GetMapping("/one-day")
+    public ResponseEntity<?> getCreatedAtForOneDay(@RequestParam("date") String date) {
+        List<UnitHead> fromDate = service.findByCreatedAtFromDate(date);
+
+        return factory.buildSuccess(
+                HttpStatus.OK,
+                fromDate,
+                "200",
+                " Unit Head Created At " + date + " Retrieved.");
+    }
+
+    //    /custom-days?start=2000-02-20&end=2000-03-02             for From Date To Date
+    @GetMapping("/custom-days")
+    public ResponseEntity<?> getCreatedAtForCustomDay(@RequestParam("from") String from, @RequestParam("to") String to) {
+        List<UnitHead> fromDateToDate = service.findByCreatedAtFromDateToDate(from, to);
+
+        return factory.buildSuccess(
+                HttpStatus.OK,
+                fromDateToDate,
+                "200",
+                " Unit Head Creation Dates From " + from + " to " + to + " Retrieved.");
+    }
 }

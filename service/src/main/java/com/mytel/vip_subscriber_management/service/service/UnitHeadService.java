@@ -10,6 +10,7 @@ public interface UnitHeadService {
 
     UnitHead create(UnitHead unitHead, String unitCode);
 
+    // find by full name
     UnitHeadResponseDto getByUnitHeadFullName(String unitHeadFullName);
 
     UnitHead getById(String id);
@@ -19,4 +20,18 @@ public interface UnitHeadService {
     UnitHead updateByUnitCode(UnitHeadUpdateDto dto, String unitCode);
 
     void deleteByUnitCode(String unitCode);
+
+    /* custom filter methods */
+    List<UnitHead> findByUnitCodeOrUnitName(String keyword);
+
+    List<UnitHead> findByPhoneNumber(String phoneNumber);
+
+    List<UnitHead> findByVmyCode(String vmyCode);
+
+    //    For From Date
+    List<UnitHead> findByCreatedAtFromDate(String startDate);
+
+    //    For From Date To Date
+    List<UnitHead> findByCreatedAtFromDateToDate(String startDate, String endDate);
+
 }

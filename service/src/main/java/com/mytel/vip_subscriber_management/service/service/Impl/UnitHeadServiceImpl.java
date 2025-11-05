@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -22,6 +25,7 @@ public class UnitHeadServiceImpl implements UnitHeadService {
     private final UnitHeadRepo repo;
     private final UnitRepo unitRepo;
     private final UnitHeadLogService service;
+    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_DATE;
 
     @Override
     @Transactional
@@ -106,6 +110,44 @@ public class UnitHeadServiceImpl implements UnitHeadService {
         }
         repo.delete(head);
         service.logDeleted(head);
+    }
+
+    @Override
+    public List<UnitHead> findByUnitCodeOrUnitName(String keyword) {
+        return repo.findByUnitCodeIgnoreCaseOrUnitNameIgnoreCase(keyword);
+    }
+
+    @Override
+    public List<UnitHead> findByPhoneNumber(String phoneNumber) {
+        return repo.findByPhone(phoneNumber);
+    }
+
+    @Override
+    public List<UnitHead> findByVmyCode(String vmyCode) {
+        return repo.findByVmyCodeIgnoreCase(vmyCode);
+    }
+
+    @Override
+    public List<UnitHead> findByCreatedAtFromDate(String startDate) {
+
+        LocalDate date = LocalDate.parse(startDate, DATE_FORMATTER);
+
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.plusDays(1).atStartOfDay();
+
+        return repo.findByCreatedAtBetween(start, end);
+    }
+
+    @Override
+    public List<UnitHead> findByCreatedAtFromDateToDate(String startDate, String endDate) {
+
+        LocalDate start = LocalDate.parse(startDate, DATE_FORMATTER);
+        LocalDate end = LocalDate.parse(endDate, DATE_FORMATTER);
+
+        LocalDateTime from = start.atStartOfDay();
+        LocalDateTime to = end.plusDays(1).atStartOfDay();
+
+        return repo.findByCreatedAtBetween(from, to);
     }
 
 }
