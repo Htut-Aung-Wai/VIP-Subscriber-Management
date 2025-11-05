@@ -3,10 +3,12 @@ package com.mytel.vip_subscriber_management.service.service;
 import com.mytel.vip_subscriber_management.common.common.response.Basic;
 import com.mytel.vip_subscriber_management.database.dto.SubscriberSearchDto;
 import com.mytel.vip_subscriber_management.database.dto.VipSubscriberRequest;
+import com.mytel.vip_subscriber_management.database.entity.VipSubscriber;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface VipSubscriberService {
 
@@ -20,7 +22,9 @@ public interface VipSubscriberService {
 
     ResponseEntity<Basic> deleteVipSubscriber(String vipSubscriberId);
 
-    ResponseEntity<?> importData(MultipartFile file);
+    ResponseEntity<?> validateImportSubscriber(MultipartFile file);
+
+    ResponseEntity<?> saveValidatedList(String token);
 
     ResponseEntity<byte[]> downloadTemplate() throws IOException;
 

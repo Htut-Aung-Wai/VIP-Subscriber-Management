@@ -9,7 +9,10 @@ import com.mytel.vip_subscriber_management.common.constant.VipSubscriberLogActio
 import com.mytel.vip_subscriber_management.database.dto.SubscriberSearchDto;
 import com.mytel.vip_subscriber_management.database.dto.VipSubscriberExcelImportCreateErrorDto;
 import com.mytel.vip_subscriber_management.database.dto.VipSubscriberRequest;
+import com.mytel.vip_subscriber_management.database.entity.Unit;
 import com.mytel.vip_subscriber_management.database.entity.VipSubscriber;
+import com.mytel.vip_subscriber_management.database.entity.VipSubscriberImportTemp;
+import com.mytel.vip_subscriber_management.database.repository.VipSubscriberImportTempRepo;
 import com.mytel.vip_subscriber_management.database.repository.VipSubscriberRepo;
 import com.mytel.vip_subscriber_management.service.service.VipSubscriberLogService;
 import com.mytel.vip_subscriber_management.service.service.VipSubscriberService;
@@ -36,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -45,12 +49,14 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
     private final ResponseFactory responseFactory;
     private final VipSubscriberLogService vipSubscriberLogService;
     private final Util util;
+    private final VipSubscriberImportTempRepo vipSubscriberImportTempRepo;
 
-    public VipSubscriberServiceImpl(VipSubscriberRepo vipSubscriberRepo, ResponseFactory responseFactory, VipSubscriberLogService vipSubscriberLogService, Util util) {
+    public VipSubscriberServiceImpl(VipSubscriberRepo vipSubscriberRepo, ResponseFactory responseFactory, VipSubscriberLogService vipSubscriberLogService, Util util, VipSubscriberImportTempRepo vipSubscriberImportTempRepo) {
         this.vipSubscriberRepo = vipSubscriberRepo;
         this.responseFactory = responseFactory;
         this.vipSubscriberLogService = vipSubscriberLogService;
         this.util = util;
+        this.vipSubscriberImportTempRepo = vipSubscriberImportTempRepo;
     }
 
     @Override
@@ -323,11 +329,12 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
 
     @Override
-    public ResponseEntity<?> importData(MultipartFile file) {
+    public ResponseEntity<?> validateImportSubscriber(MultipartFile file) {
         // Increase the maximum allowable byte array size for Apache POI
         org.apache.poi.util.IOUtils.setByteArrayMaxOverride(200_000_000);
 
-        List<VipSubscriber> vipSubscribers = new ArrayList<>();
+        //List<VipSubscriber> vipSubscribers = new ArrayList<>();
+        List<VipSubscriber> validList = new ArrayList<>();
         List<VipSubscriberExcelImportCreateErrorDto> errorList = new ArrayList<>();
         Set<String> seenGlobal = new HashSet<>();
 
@@ -395,24 +402,25 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
                     if (checkValidSubscriberNumber(subscriberNo, errorList, seenGlobal,existingNumbers)) {
                         VipSubscriberRequest vipSubscriberRequest=new VipSubscriberRequest(vipPackageId,subscriberNo,branchName,proposalDocumentNo);
-                        VipSubscriber vipSubscriberSaved=vipSubscriberRequestToVipSubscriber(vipSubscriberRequest);
+                        VipSubscriber vipSubscriberToSave=vipSubscriberRequestToVipSubscriber(vipSubscriberRequest);
 
-                        vipSubscribers.add(vipSubscriberSaved);
+                        //vipSubscribers.add(vipSubscriberSaved);
+                        validList.add(vipSubscriberToSave);
                     }
 
 
-                    // Process in batches (for example, every 500 records)
+                    /*// Process in batches (for example, every 500 records)
                     if (vipSubscribers.size() >= 500) {
                         saveBatchVipSubscriber(vipSubscribers,500);  // Save batch
                         vipSubscribers.clear();  // Clear the list after saving
-                    }
+                    }*/
                 } catch (Exception e) {
                     errorList.add(new VipSubscriberExcelImportCreateErrorDto(subscriberNo,
                             "Error processing row: " + e.getMessage()));
                 }
             }
 
-            // Save any remaining records
+            /*// Save any remaining records
             if (!vipSubscribers.isEmpty()) {
                 saveBatchVipSubscriber(vipSubscribers, 500);
             }
@@ -420,15 +428,30 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
 
             if(!errorList.isEmpty()) {
                 return exportVipSubscriberErrorList(errorList);
+            }*/
+
+            String token = UUID.randomUUID().toString();
+
+            // Save validList to temporary table
+            for (VipSubscriber v : validList) {
+                vipSubscriberImportTempRepo.save(new VipSubscriberImportTemp(token, v.getVipPackageId(),
+                        v.getSubscriberNo(), v.getBranchName(), v.getProposalDocumentNo(),v.getRegistrationDate(),v.getExpiryDate(),v.getUnitId()));
             }
 
+            Map<String, Object> result = new HashMap<>();
+            result.put("validationToken", token);
+            result.put("validCount", validList.size());
+            result.put("errorList", errorList.size());
 
-            return responseFactory.buildSuccess(
+            return responseFactory.buildSuccess(HttpStatus.OK,result, ErrorCode.SUCCESS, "Validated");
+
+
+            /*return responseFactory.buildSuccess(
                     HttpStatus.OK,
                     "Completed",
                     ErrorCode.SUCCESS,
                     "File imported successfully."
-            );
+            );*/
 
         } catch (Exception e) {
             log.error("[Failed] Error processing import file", e);
@@ -440,6 +463,51 @@ public class VipSubscriberServiceImpl implements VipSubscriberService {
             );
         }
     }
+
+
+    @Override
+    public ResponseEntity<?> saveValidatedList(String token) {
+        try {
+            List<VipSubscriberImportTemp> tempList = vipSubscriberImportTempRepo.findByToken(token);
+
+            if (tempList.isEmpty()) {
+                return responseFactory.buildError(HttpStatus.BAD_REQUEST, ErrorCode.FAIL, ErrorCode.INTERNAL_ERROR,
+                        "Invalid or expired token.");
+            }
+
+            List<VipSubscriber> finalList = tempList.stream()
+                    .map(t -> {
+                        VipSubscriber v = new VipSubscriber();
+                        v.setVipPackageId(t.getVipPackageId());
+                        v.setSubscriberNo(t.getSubscriberNo());
+                        v.setBranchName(t.getBranchName());
+                        v.setProposalDocumentNo(t.getProposalDocumentNo());
+                        v.setRegistrationDate(t.getRegistrationDate());
+                        v.setExpiryDate(t.getExpiryDate());
+                        v.setDeleted(false);
+                        Unit unit = new Unit();
+                        unit.setId(v.getUnitId());
+                        v.setUnit(unit);
+                        return v;
+                    })
+                    .collect(Collectors.toList());
+
+            saveBatchVipSubscriber(finalList, 500);
+            vipSubscriberImportTempRepo.deleteByToken(token); // cleanup
+
+            return responseFactory.buildSuccess(HttpStatus.OK, "Completed", ErrorCode.SUCCESS, "Data saved successfully.");
+
+        } catch (Exception e) {
+            log.error("[Failed] Error saving validated data", e);
+            return responseFactory.buildError(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ErrorCode.INTERNAL_ERROR,
+                    ErrorCode.FAIL,
+                    "Error while saving data: " + e.getMessage()
+            );
+        }
+    }
+
 
 
     private boolean checkValidSubscriberNumber(
