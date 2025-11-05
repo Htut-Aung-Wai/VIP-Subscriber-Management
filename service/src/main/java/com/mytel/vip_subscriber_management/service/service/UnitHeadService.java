@@ -3,8 +3,7 @@ package com.mytel.vip_subscriber_management.service.service;
 import com.mytel.vip_subscriber_management.database.dto.UnitHeadResponseDto;
 import com.mytel.vip_subscriber_management.database.dto.UnitHeadUpdateDto;
 import com.mytel.vip_subscriber_management.database.entity.UnitHead;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface UnitHeadService {
 
@@ -15,23 +14,23 @@ public interface UnitHeadService {
 
     UnitHead getById(String id);
 
-    List<UnitHead> getAll();
+    Page<UnitHead> getAll(int page, int size);
 
     UnitHead updateByUnitCode(UnitHeadUpdateDto dto, String unitCode);
 
     void deleteByUnitCode(String unitCode);
 
     /* custom filter methods */
-    List<UnitHead> findByUnitCodeOrUnitName(String keyword);
+    UnitHead findByUnitCodeOrUnitName(String keyword);
 
-    List<UnitHead> findByPhoneNumber(String phoneNumber);
+    UnitHead findByPhoneNumber(String phoneNumber);
 
-    List<UnitHead> findByVmyCode(String vmyCode);
+    UnitHead findByVmyCode(String vmyCode);
 
     //    For From Date
-    List<UnitHead> findByCreatedAtFromDate(String startDate);
+    Page<UnitHead> findByCreatedAtFromDate(String startDate, int page, int size);
 
     //    For From Date To Date
-    List<UnitHead> findByCreatedAtFromDateToDate(String startDate, String endDate);
+    Page<UnitHead> findByCreatedAtFromDateToDate(String startDate, String endDate, int page, int size);
 
 }

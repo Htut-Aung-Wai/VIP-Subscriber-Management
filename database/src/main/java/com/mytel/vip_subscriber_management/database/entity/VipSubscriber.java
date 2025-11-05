@@ -1,6 +1,6 @@
 package com.mytel.vip_subscriber_management.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "CAIO_VIP_VIP_SUBSCRIBER")
-public class VipSubscriber extends BaseEntity{
+public class VipSubscriber extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -44,7 +44,7 @@ public class VipSubscriber extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "UNIT_ID")
-    @JsonIgnore
+    @JsonBackReference
     private Unit unit;
 
     @JsonProperty("unitId")

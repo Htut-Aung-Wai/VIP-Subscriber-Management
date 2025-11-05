@@ -2,6 +2,7 @@ package com.mytel.vip_subscriber_management.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -47,6 +49,10 @@ public class Unit {
     @OneToOne(mappedBy = "unit", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JsonBackReference
     private UnitHead unitHead;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "unit")
+    private List<VipSubscriber> subscribers;
 
 
     @PrePersist
