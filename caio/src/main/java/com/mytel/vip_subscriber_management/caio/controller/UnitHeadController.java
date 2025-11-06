@@ -6,12 +6,14 @@ import com.mytel.vip_subscriber_management.database.dto.UnitHeadUpdateDto;
 import com.mytel.vip_subscriber_management.database.entity.UnitHead;
 import com.mytel.vip_subscriber_management.service.service.UnitHeadService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,12 +60,19 @@ public class UnitHeadController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAll() {
-        List<UnitHead> unitHead = service.getAll();
+    public ResponseEntity<?> getAll(@RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "10") int size) {
+        Page<UnitHead> unitHead = service.getAll(page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("units", unitHead.getContent());
+        response.put("currentPage", unitHead.getNumber());
+        response.put("totalItems", unitHead.getTotalElements());
+        response.put("totalPages", unitHead.getTotalPages());
 
         return factory.buildSuccess(
                 HttpStatus.OK,
-                unitHead,
+                response,
                 "200",
                 " All Unit Heads Retrieved."
         );
@@ -95,7 +104,7 @@ public class UnitHeadController {
 
     @GetMapping("/unit-code-or-name/{keyword}")
     public ResponseEntity<?> getByUnitCodeOrUnitName(@PathVariable("keyword") String keyword) {
-        List<UnitHead> unitHead = service.findByUnitCodeOrUnitName(keyword);
+        UnitHead unitHead = service.findByUnitCodeOrUnitName(keyword);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
@@ -107,7 +116,7 @@ public class UnitHeadController {
 
     @GetMapping("/phone-number/{phoneNumber}")
     public ResponseEntity<?> getByPhoneNumber(@PathVariable("phoneNumber") String phoneNumber) {
-        List<UnitHead> unitHead = service.findByPhoneNumber(phoneNumber);
+        UnitHead unitHead = service.findByPhoneNumber(phoneNumber);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
@@ -119,7 +128,7 @@ public class UnitHeadController {
 
     @GetMapping("/vmy-code/{vmyCode}")
     public ResponseEntity<?> getByVmyCode(@PathVariable("vmyCode") String vmyCode) {
-        List<UnitHead> unitHead = service.findByVmyCode(vmyCode);
+        UnitHead unitHead = service.findByVmyCode(vmyCode);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
@@ -131,24 +140,40 @@ public class UnitHeadController {
 
     //    /one-day?date=2000-02-20                                 for From Date
     @GetMapping("/one-day")
-    public ResponseEntity<?> getCreatedAtForOneDay(@RequestParam("date") String date) {
-        List<UnitHead> fromDate = service.findByCreatedAtFromDate(date);
+    public ResponseEntity<?> getCreatedAtForOneDay(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size,
+                                                   @RequestParam("date") String date) {
+        Page<UnitHead> fromDate = service.findByCreatedAtFromDate(date, page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("units", fromDate.getContent());
+        response.put("currentPage", fromDate.getNumber());
+        response.put("totalItems", fromDate.getTotalElements());
+        response.put("totalPages", fromDate.getTotalPages());
 
         return factory.buildSuccess(
                 HttpStatus.OK,
-                fromDate,
+                response,
                 "200",
                 " Unit Head Created At " + date + " Retrieved.");
     }
 
     //    /custom-days?start=2000-02-20&end=2000-03-02             for From Date To Date
     @GetMapping("/custom-days")
-    public ResponseEntity<?> getCreatedAtForCustomDay(@RequestParam("from") String from, @RequestParam("to") String to) {
-        List<UnitHead> fromDateToDate = service.findByCreatedAtFromDateToDate(from, to);
+    public ResponseEntity<?> getCreatedAtForCustomDay(@RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "10") int size,
+                                                      @RequestParam("from") String from, @RequestParam("to") String to) {
+        Page<UnitHead> fromDateToDate = service.findByCreatedAtFromDateToDate(from, to, page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("units", fromDateToDate.getContent());
+        response.put("currentPage", fromDateToDate.getNumber());
+        response.put("totalItems", fromDateToDate.getTotalElements());
+        response.put("totalPages", fromDateToDate.getTotalPages());
 
         return factory.buildSuccess(
                 HttpStatus.OK,
-                fromDateToDate,
+                response,
                 "200",
                 " Unit Head Creation Dates From " + from + " to " + to + " Retrieved.");
     }

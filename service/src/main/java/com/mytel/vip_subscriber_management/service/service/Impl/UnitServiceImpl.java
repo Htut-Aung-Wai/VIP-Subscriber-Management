@@ -5,10 +5,11 @@ import com.mytel.vip_subscriber_management.database.entity.Unit;
 import com.mytel.vip_subscriber_management.database.repository.UnitRepo;
 import com.mytel.vip_subscriber_management.service.service.UnitService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -31,8 +32,9 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
-    public List<Unit> getAllUnit() {
-        return repo.findAll();
+    public Page<Unit> getAllUnit(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return repo.findAll(pageable);
     }
 
     @Override

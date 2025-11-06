@@ -10,13 +10,16 @@ import com.mytel.vip_subscriber_management.database.repository.UnitRepo;
 import com.mytel.vip_subscriber_management.service.service.UnitHeadLogService;
 import com.mytel.vip_subscriber_management.service.service.UnitHeadService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -77,8 +80,9 @@ public class UnitHeadServiceImpl implements UnitHeadService {
     }
 
     @Override
-    public List<UnitHead> getAll() {
-        return repo.findAll();
+    public Page<UnitHead> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return repo.findAll(pageable);
     }
 
     @Override
@@ -113,41 +117,43 @@ public class UnitHeadServiceImpl implements UnitHeadService {
     }
 
     @Override
-    public List<UnitHead> findByUnitCodeOrUnitName(String keyword) {
+    public UnitHead findByUnitCodeOrUnitName(String keyword) {
         return repo.findByUnitCodeIgnoreCaseOrUnitNameIgnoreCase(keyword);
     }
 
     @Override
-    public List<UnitHead> findByPhoneNumber(String phoneNumber) {
+    public UnitHead findByPhoneNumber(String phoneNumber) {
         return repo.findByPhone(phoneNumber);
     }
 
     @Override
-    public List<UnitHead> findByVmyCode(String vmyCode) {
+    public UnitHead findByVmyCode(String vmyCode) {
         return repo.findByVmyCodeIgnoreCase(vmyCode);
     }
 
     @Override
-    public List<UnitHead> findByCreatedAtFromDate(String startDate) {
+    public Page<UnitHead> findByCreatedAtFromDate(String startDate, int page, int size) {
 
         LocalDate date = LocalDate.parse(startDate, DATE_FORMATTER);
 
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.plusDays(1).atStartOfDay();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
-        return repo.findByCreatedAtBetween(start, end);
+        return repo.findByCreatedAtBetween(start, end, pageable);
     }
 
     @Override
-    public List<UnitHead> findByCreatedAtFromDateToDate(String startDate, String endDate) {
+    public Page<UnitHead> findByCreatedAtFromDateToDate(String startDate, String endDate, int page, int size) {
 
         LocalDate start = LocalDate.parse(startDate, DATE_FORMATTER);
         LocalDate end = LocalDate.parse(endDate, DATE_FORMATTER);
 
         LocalDateTime from = start.atStartOfDay();
         LocalDateTime to = end.plusDays(1).atStartOfDay();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
-        return repo.findByCreatedAtBetween(from, to);
+        return repo.findByCreatedAtBetween(from, to, pageable);
     }
 
 }

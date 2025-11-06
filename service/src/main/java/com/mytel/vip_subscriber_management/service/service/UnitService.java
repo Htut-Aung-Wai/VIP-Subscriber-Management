@@ -1,14 +1,13 @@
 package com.mytel.vip_subscriber_management.service.service;
 
 import com.mytel.vip_subscriber_management.database.entity.Unit;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface UnitService {
 
     Unit createUnit(Unit unit);
 
-    List<Unit> getAllUnit();
+    Page<Unit> getAllUnit(int page, int size);
 
     Unit getUnitById(Long id);
 

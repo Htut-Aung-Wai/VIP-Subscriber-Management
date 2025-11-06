@@ -4,11 +4,13 @@ import com.mytel.vip_subscriber_management.common.common.response.ResponseFactor
 import com.mytel.vip_subscriber_management.database.entity.Unit;
 import com.mytel.vip_subscriber_management.service.service.UnitService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,12 +33,20 @@ public class UnitController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllUnits() {
-        List<Unit> allUnits = service.getAllUnit();
+    public ResponseEntity<?> getAllUnits(@RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size) {
+
+        Page<Unit> allUnits = service.getAllUnit(page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("units", allUnits.getContent());
+        response.put("currentPage", allUnits.getNumber());
+        response.put("totalItems", allUnits.getTotalElements());
+        response.put("totalPages", allUnits.getTotalPages());
 
         return factory.buildSuccess(
                 HttpStatus.OK,
-                allUnits,
+                response,
                 "200",
                 "All Units Retrieved."
         );
