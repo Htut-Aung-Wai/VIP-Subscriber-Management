@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "vip_subscriber_import_temp")
+@Table(name = "CAIO_VIP_VIP_SUBSCRIBER_IMPORT_TEMP")
 @Getter
 @Setter
 public class VipSubscriberImportTemp extends BaseEntity{
